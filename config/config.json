@@ -2,16 +2,22 @@
   "development": {
     "username": "root",
     "password": null,
-    "database": "nodejs_app_test",
+    "database": "convocatorias",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "test": {
-    "username": "root",
-    "password": null,
-    "database": "database_test",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "username": "bran",
+    "password": "TNYoCJQunXdCInJLv64M50L5lkenoLVl",
+    "database": "nodejs_app_test_vuq6",
+    "host": "dpg-d0qcc1emcj7s73dts350-a",
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
   },
   "production": {
     "username": "root",

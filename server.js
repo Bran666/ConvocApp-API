@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 // app.use("/api/users", require("./api/users")); //se incluye el router de usuarios
 
 // app.use("/api/v1/users", require("./api/v1/routes/user.routes"));
+app.use("/api/v1/convocatorias", require("./api/v1/routes/convocatorias.routes"));
 
 //Se incia el servidor en el puesto 4000
 app.listen(app.get("port"), () => {

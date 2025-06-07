@@ -1,19 +1,14 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
-  class empresa extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+  class Empresa extends Model {
     static associate(models) {
-      // define association here
+      // define association here si tienes
     }
   }
-  empresa.init({
+
+  Empresa.init({
     nombre: DataTypes.STRING,
     nit: DataTypes.STRING,
     razonSocial: DataTypes.STRING,
@@ -35,7 +30,10 @@ module.exports = (sequelize, DataTypes) => {
     fkIdUsuario: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'empresa',
+    modelName: 'Empresa',       // ← con mayúscula
+    tableName: 'empresas',      // ← forzar nombre correcto de tabla
+    timestamps: false           // ← si no usas createdAt/updatedAt
   });
-  return empresa;
+
+  return Empresa;
 };

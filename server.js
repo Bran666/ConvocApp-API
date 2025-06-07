@@ -14,6 +14,16 @@ app.use(bodyParser.json());
 
 //Routes
 // app.use("/api/users", require("./api/users")); //se incluye el router de usuarios
+app.use("/api/v1/empresas", require("./api/v1/routes/empresas.routes"));
+app.use("/api/v1/tipo", require("./api/v1/routes/tipo.routes"));
+app.use("/api/v1/requisitoSeleccion", require("./api/v1/routes/requisitoSeleccion.routes"));
+app.use("/api/v1/linea", require("./api/v1/routes/linea.routes"));
+app.use("/api/v1/publicoObjetivo", require("./api/v1/routes/publicoObjetivo.routes"));
+
+
+
+
+
 
 // app.use("/api/v1/users", require("./api/v1/routes/user.routes"));
 

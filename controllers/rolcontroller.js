@@ -1,30 +1,30 @@
 const rolService = require("../services/rolService.js");
 
 const getAllrol = async (req, res) => {
-  const getAllrol = await rolService.getAllrol();
-  if (getAllrol) {
+  const allrol = await rolService.getAllrol();
+  if (allrol) {
     res.status(200).send({ status: "Ok", data: allrol });
   } else {
     res.status(400).send({ status: "Error", message: null });
   }
 };
 
-const getUserById = async (req, res) => {
+const getrolById = async (req, res) => {
   const id = req.params.id;
-  const oneUser = await rolService.getrolById(id);
-  if (oneUser) {
-    res.status(200).send({ status: "Ok", data: oneUser });
+  const oneRol = await rolService.getrolById(id);
+  if (oneRol) {
+    res.status(200).send({ status: "Ok", data: oneRol });
   } else {
     res.status(400).send({ status: "failed", message: null });
   }
 };
 
 const createrol = async (req, res) => {
-  const { name, email, password } = req.body;
-  const newUser = await userSerrol.createrol(name, email, password);
+  const { nombre } = req.body;
+  const newRol = await rolService.createrol(nombre);
 
-  if (newrol) {
-    res.status(200).send({ status: "Ok", data: newUser });
+  if (newRol) {
+    res.status(200).send({ status: "Ok", data: newRol });
   } else {
     res.status(400).send({ status: "failed", message: null });
   }
@@ -32,10 +32,10 @@ const createrol = async (req, res) => {
 
 const updaterol = async (req, res) => {
   const id = req.params.id;
-  const { name, email, password } = req.body;
-  const updatedrol = await userSerrol.updaterol(id, name, email, password);
-  if (updatedrol) {
-    res.status(200).send({ status: "Ok", data: updatedrol });
+  const { nombre } = req.body;
+  const updatedRol = await rolService.updaterol(id, nombre);
+  if (updatedRol) {
+    res.status(200).send({ status: "Ok", data: updatedRol });
   } else {
     res.status(400).send({ status: "failed", message: null });
   }
@@ -43,16 +43,16 @@ const updaterol = async (req, res) => {
 
 const deleterol = async (req, res) => {
   const id = req.params.id;
-  const deleterol = await userSerrol.deleterol(id);
-  if (deleterol) {
-    res.status(200).send({ status: "Ok", data: deleterol });
+  const deletedRol = await rolService.deleterol(id);
+  if (deletedRol) {
+    res.status(200).send({ status: "Ok", data: deletedRol });
   } else {
     res.status(400).send({ status: "failed", message: null });
   }
 };
 
 module.exports = {
-  getAllUrol,
+  getAllrol,
   getrolById,
   createrol,
   updaterol,

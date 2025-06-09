@@ -11,10 +11,10 @@ router.get("/testUserApi", (req, res) => {
 });
 
 //Rutas del usuario con los verbpos http
-router.get('/', rolController.getAllUsers);
-router.get('/:id', rolController.getUserById);
-router.post('/new', rolController.createUser);
-router.put('/update/:id', rolController.updateUser);
-router.delete('/delete/:id', rolController.deleteUser);
+router.get('/', rolController.getAllrol);
+router.get('/:id', rolController.getrolById);
+router.post('/new', rolController.createrol);
+router.put('/update/:id', rolController.updaterol);
+router.delete('/delete/:id', rolController.deleterol);
 
 module.exports = router;

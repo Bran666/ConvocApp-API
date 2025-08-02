@@ -2,36 +2,18 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('convocatorias', {
+    await queryInterface.createTable('Interests', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      idConvocatorias: {
-        type: Sequelize.INTEGER
-      },
-      nombre: {
+      name: {
         type: Sequelize.STRING
       },
-      recursos: {
+      description: {
         type: Sequelize.TEXT
-      },
-      linkConvocatoria: {
-        type: Sequelize.STRING
-      },
-      fechaApertura: {
-        type: Sequelize.STRING
-      },
-      fechaCierre: {
-        type: Sequelize.STRING
-      },
-      nombrePagina: {
-        type: Sequelize.STRING
-      },
-      pagina: {
-        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
@@ -44,6 +26,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('convocatorias');
+    await queryInterface.dropTable('Interests');
   }
 };

@@ -18,21 +18,24 @@ const getUserById = async (id) => {
   }
 };
 
-const createUser = async (name, email, password) => {
+const createUser = async (name, email, password, phone, is_active, role_id) => {
   try {
-    const newUser = await db.User.create({ name, email, password });
+    const newUser = await db.User.create({ name, email, password, phone, is_active, role_id });
     return newUser;
   } catch (error) {
     throw new Error("Error al crear el usuario" + error);
   }
 };
 
-const updateUser = async (id, name, email, password) => {
+const updateUser = async (id, name, email, password, phone, is_active, role_id) => {
   try {
     const user = await db.User.findByPk(id);
     user.name = name;
     user.email = email;
     user.password = password;
+    user.phone = phone;
+    user.is_active = is_active;
+    user.role_id = role_id;
     await user.save();
     return user;
   } catch (error) {

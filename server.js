@@ -15,9 +15,10 @@ app.use(bodyParser.json());
 //Routes
 // app.use("/api/users", require("./api/users")); //se incluye el router de usuarios
 
-// app.use("/api/v1/users", require("./api/v1/routes/user.routes"));
+app.use("/api/v1/users", require("./api/v1/routes/user.routes"));
+app.use("/api/v1/calls", require("./api/v1/routes/call.routes"));
 
-//Se incia el servidor en el puesto 4000
+//Se incia el servidor en el puesto 4000 
 app.listen(app.get("port"), () => {
   console.log(`server running on port ${app.get("port")}  😜😉`);
 });

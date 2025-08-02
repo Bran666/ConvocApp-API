@@ -21,8 +21,8 @@ const getUserById = async (req, res) => {
 };
 
 const createUser = async (req, res) => {
-  const { name, email, password } = req.body;
-  const newUser = await userService.createUser(name, email, password);
+  const { name, email, password, phone, is_active, role_id } = req.body;
+  const newUser = await userService.createUser(name, email, password, phone, is_active, role_id);
 
   if (newUser) {
     res.status(200).send({ status: "Ok", data: newUser });
@@ -33,8 +33,8 @@ const createUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const id = req.params.id;
-  const { name, email, password } = req.body;
-  const updatedUser = await userService.updateUser(id, name, email, password);
+  const { name, email, password, phone, is_active, role_id } = req.body;
+  const updatedUser = await userService.updateUser(id, name, email, password, phone, is_active, role_id);
   if (updatedUser) {
     res.status(200).send({ status: "Ok", data: updatedUser });
   } else {

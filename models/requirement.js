@@ -1,27 +1,38 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Requirement extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      Requirement.belongsTo(models.Institution, { foreignKey: 'institutionId' });
-      Requirement.belongsTo(models.RequirementGroup, { foreignKey: 'groupId' });
+      Requirement.belongsTo(models.Institution, {
+        foreignKey: 'institutionId',
+        as: 'institution'
+      });
+      Requirement.belongsTo(models.RequirementGroup, {
+        foreignKey: 'groupId',
+        as: 'requirementGroup'
+      });
     }
   }
+
   Requirement.init({
-    name: DataTypes.STRING,
+    name: DataTypes.STRING(200),
     notes: DataTypes.TEXT,
-    institutionId: DataTypes.INTEGER,
-    groupId: DataTypes.INTEGER
+    institutionId: {
+      type: DataTypes.INTEGER,
+      field: 'institution_id'
+    },
+    groupId: {
+      type: DataTypes.INTEGER,
+      field: 'group_id'
+    }
   }, {
     sequelize,
     modelName: 'Requirement',
+    tableName: 'requirements',
+    underscored: true,
+    timestamps: false
   });
+
   return Requirement;
 };

@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Cities', {
+    await queryInterface.createTable('cities', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -10,28 +10,29 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
-      departmentId: {
+      department_id: { // en BD con snake_case
         type: Sequelize.INTEGER,
         references: {
-          model: 'Departments', // Nombre exacto de la tabla
+          model: 'departments', // nombre real en BD
           key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL' // o 'CASCADE' si quieres eliminar también las ciudades asociadas
+        onDelete: 'SET NULL'
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }
     });
   },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Cities');
+  async down(queryInterface) {
+    await queryInterface.dropTable('cities');
   }
 };

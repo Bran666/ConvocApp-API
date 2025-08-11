@@ -10,6 +10,7 @@ const getAllCalls = async (req, res) => {
     }
 };
 
+
 const getCallById = async (req, res) => {
   const id = req.params.id;
   const call = await callService.getCallById(id);

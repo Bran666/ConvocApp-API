@@ -17,6 +17,11 @@ app.use(bodyParser.json());
 
 app.use("/api/v1/users", require("./api/v1/routes/user.routes"));
 app.use("/api/v1/calls", require("./api/v1/routes/call.routes"));
+app.use("/api/v1/cities", require("./api/v1/routes/city.routes"));
+app.use("/api/v1/departments", require("./api/v1/routes/department.routes"));
+app.use("/api/v1/roles", require("./api/v1/routes/role.routes"));
+app.use("/api/v1/companies", require("./api/v1/routes/company.routes"));
+app.use("/api/v1/requirements", require("./api/v1/routes/requirement.routes"));
 
 //Se incia el servidor en el puesto 4000 
 app.listen(app.get("port"), () => {

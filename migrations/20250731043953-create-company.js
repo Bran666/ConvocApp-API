@@ -75,7 +75,7 @@ module.exports = {
       cityId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Cities', // Asegúrate que así se llama tu tabla
+          model: 'cities', // Asegúrate que así se llama tu tabla
           key: 'id'
         },
         onUpdate: 'CASCADE',

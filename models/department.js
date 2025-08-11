@@ -1,23 +1,32 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Department extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      Department.hasMany(models.City, { 
+        foreignKey: 'departmentId',
+        as: 'cities'
+      });
     }
   }
+
   Department.init({
-    name: DataTypes.STRING
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true // 🔹 Esto hace que use el IDENTITY de Postgres
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'Department',
+    tableName: 'departments',
+    timestamps: false
   });
+
   return Department;
 };

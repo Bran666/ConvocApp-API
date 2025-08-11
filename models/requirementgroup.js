@@ -1,24 +1,33 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class RequirementGroup extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      RequirementGroup.belongsTo(models.RequirementCategory, { foreignKey: 'categoryId' });
+      RequirementGroup.belongsTo(models.RequirementCategory, { 
+        foreignKey: 'categoryId',
+        as: 'requirementCategory'
+      });
+      RequirementGroup.hasMany(models.Requirement, { 
+        foreignKey: 'groupId',
+        as: 'requirements'
+      });
     }
   }
+
   RequirementGroup.init({
-    name: DataTypes.STRING,
-    categoryId: DataTypes.INTEGER
+    name: DataTypes.STRING(100),
+    categoryId: {
+      type: DataTypes.INTEGER,
+      field: 'category_id'
+    }
   }, {
     sequelize,
     modelName: 'RequirementGroup',
+    tableName: 'requirement_groups', // 👈 nombre real en la BD
+    underscored: true, // 👈 respeta snake_case en columnas
+    timestamps: false // 👈 no hay createdAt/updatedAt
   });
+
   return RequirementGroup;
 };

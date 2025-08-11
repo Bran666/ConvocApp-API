@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
@@ -21,5 +22,13 @@
   "devDependencies": {
     "dotenv": "^16.5.0",
     "nodemon": "^3.1.10"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bran666/ConvocApp-API.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Bran666/ConvocApp-API/issues"
+  },
+  "homepage": "https://github.com/Bran666/ConvocApp-API#readme"
 }

@@ -1,25 +1,41 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class CallAdditionalInterest extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      CallAdditionalInterest.belongsTo(models.Call, { foreignKey: 'callId' });
-      CallAdditionalInterest.belongsTo(models.Interest, { foreignKey: 'interestId' });
+      // Relación con Call
+      CallAdditionalInterest.belongsTo(models.Call, {
+        foreignKey: 'callId',
+        as: 'call'
+      });
+
+      // Relación con Interest
+      CallAdditionalInterest.belongsTo(models.Interest, {
+        foreignKey: 'interestId',
+        as: 'interest'
+      });
     }
   }
+
   CallAdditionalInterest.init({
-    callId: DataTypes.INTEGER,
-    interestId: DataTypes.INTEGER
+    callId: {
+      type: DataTypes.INTEGER,
+      field: 'call_id',
+      primaryKey: true
+    },
+    interestId: {
+      type: DataTypes.INTEGER,
+      field: 'interest_id',
+      primaryKey: true
+    }
   }, {
     sequelize,
     modelName: 'CallAdditionalInterest',
+    tableName: 'call_additional_interests',
+    underscored: true,
+    timestamps: false // 👈 porque la tabla no tiene created_at ni updated_at
   });
+
   return CallAdditionalInterest;
 };

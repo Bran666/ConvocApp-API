@@ -1,28 +1,65 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      User.belongsTo(models.Role, { foreignKey: 'role_id' });
+      User.belongsTo(models.Role, {
+        foreignKey: 'role_id',
+        as: 'role',
+        onUpdate: 'CASCADE',
+        onDelete: 'RESTRICT'
+      });
+
+      User.hasMany(models.Favorite, {
+        foreignKey: 'userId',
+        as: 'favorites',
+        onDelete: 'CASCADE'
+      });
     }
   }
-  User.init({
-    name: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password: DataTypes.STRING,
-    phone: DataTypes.STRING,
-    is_active: DataTypes.BOOLEAN,
-    role_id: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'User',
-  });
+
+  User.init(
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true // 👈 evita que tengas que mandar id manualmente
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      email: {
+        type: DataTypes.STRING,
+        unique: true, // 👈 evita correos duplicados
+        allowNull: false
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      phone: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      is_active: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+      },
+      role_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+      }
+    },
+    {
+      sequelize,
+      modelName: 'User',
+      tableName: 'users',
+      underscored: true,
+      timestamps: false
+    }
+  );
+
   return User;
 };

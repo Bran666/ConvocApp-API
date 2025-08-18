@@ -4,11 +4,14 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class RequirementGroup extends Model {
     static associate(models) {
-      RequirementGroup.belongsTo(models.RequirementCategory, { 
+      // Relación con RequirementCategory
+      RequirementGroup.belongsTo(models.RequirementCategory, {
         foreignKey: 'categoryId',
-        as: 'requirementCategory'
+        as: 'category'
       });
-      RequirementGroup.hasMany(models.Requirement, { 
+
+      // Si luego tienes relación con Requirements:
+      RequirementGroup.hasMany(models.Requirement, {
         foreignKey: 'groupId',
         as: 'requirements'
       });
@@ -16,7 +19,15 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   RequirementGroup.init({
-    name: DataTypes.STRING(100),
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    name: {
+      type: DataTypes.STRING(100),
+      allowNull: false
+    },
     categoryId: {
       type: DataTypes.INTEGER,
       field: 'category_id'
@@ -24,9 +35,9 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'RequirementGroup',
-    tableName: 'requirement_groups', // 👈 nombre real en la BD
-    underscored: true, // 👈 respeta snake_case en columnas
-    timestamps: false // 👈 no hay createdAt/updatedAt
+    tableName: 'requirement_groups',
+    underscored: true,
+    timestamps: false // 👈 porque en la tabla no hay createdAt/updatedAt
   });
 
   return RequirementGroup;

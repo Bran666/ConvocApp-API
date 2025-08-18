@@ -4,10 +4,8 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Institution extends Model {
     static associate(models) {
-      Institution.hasMany(models.Requirement, {
-        foreignKey: 'institutionId',
-        as: 'requirements'
-      });
+      // 👇 Aquí definimos relaciones si después otras tablas dependen de institutions
+      // Ejemplo: Institution.hasMany(models.User, { foreignKey: 'institutionId', as: 'users' });
     }
   }
 
@@ -28,8 +26,9 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Institution',
-    tableName: 'institutions', // 👈 usa exactamente el nombre real de la tabla
-    timestamps: false // 👈 porque tu tabla no tiene createdAt/updatedAt
+    tableName: 'institutions',
+    underscored: true,
+    timestamps: false
   });
 
   return Institution;

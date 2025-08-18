@@ -7,11 +7,11 @@ const router = Router();
 router.get("/testCityApi", (req, res) => {
   res.send({
     status: "200",
-    message: "Hello from Cities!",
+    message: "Hello from City!",
   });
 });
 
-// Rutas de cities con los verbos HTTP
+// Rutas de City con los verbos HTTP
 router.get('/', cityController.getAllCities);
 router.get('/:id', cityController.getCityById);
 router.post('/new', cityController.createCity);

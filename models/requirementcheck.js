@@ -1,26 +1,48 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class RequirementCheck extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      RequirementCheck.belongsTo(models.Company, { foreignKey: 'companyId' });
-      RequirementCheck.belongsTo(models.Requirement, { foreignKey: 'requirementId' });
+      // Relación con Company
+      RequirementCheck.belongsTo(models.Company, {
+        foreignKey: 'companyId',
+        as: 'company'
+      });
+
+      // Relación con Requirement
+      RequirementCheck.belongsTo(models.Requirement, {
+        foreignKey: 'requirementId',
+        as: 'requirement'
+      });
     }
   }
+
   RequirementCheck.init({
-    isChecked: DataTypes.BOOLEAN,
-    companyId: DataTypes.INTEGER,
-    requirementId: DataTypes.INTEGER
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    isChecked: {
+      type: DataTypes.BOOLEAN,
+      field: 'is_checked'
+    },
+    companyId: {
+      type: DataTypes.INTEGER,
+      field: 'company_id'
+    },
+    requirementId: {
+      type: DataTypes.INTEGER,
+      field: 'requirement_id'
+    }
   }, {
     sequelize,
     modelName: 'RequirementCheck',
+    tableName: 'requirement_checks',
+    underscored: true,
+    timestamps: false // 👈 porque en la tabla no hay createdAt/updatedAt
   });
+
   return RequirementCheck;
 };

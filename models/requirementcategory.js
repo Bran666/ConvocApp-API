@@ -1,23 +1,26 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class RequirementCategory extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      // 👉 Por ahora no hay relaciones,
+      // pero acá podrías definir belongsToMany o hasMany si luego otra tabla depende de RequirementCategory
     }
   }
+
   RequirementCategory.init({
-    name: DataTypes.STRING
+    name: {
+      type: DataTypes.STRING(45),
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'RequirementCategory',
+    tableName: 'requirement_categories',
+    underscored: true,
+    timestamps: false // 👈 tu tabla no tiene createdAt/updatedAt
   });
+
   return RequirementCategory;
 };

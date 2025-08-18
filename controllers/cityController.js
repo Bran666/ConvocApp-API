@@ -53,7 +53,15 @@ const createCity = async (req, res) => {
         const newCity = await cityService.createCity({ name, departmentId });
         res.status(201).json({ status: "Ok", data: newCity });
     } catch (error) {
-        res.status(500).json({ status: "Error", message: error.message });
+        // Detectamos error de llave foránea (departamento no existe)
+        if (error.name === "SequelizeForeignKeyConstraintError") {
+            return res.status(400).json({
+                status: "Error",
+                message: "El departmentId especificado no existe"
+            });
+        }
+
+        res.status(500).json({ status: "Error", message: "Error al crear la ciudad" });
     }
 };
 
@@ -69,6 +77,7 @@ const updateCity = async (req, res) => {
 
         const { name, departmentId } = req.body;
         const updatedCity = await cityService.updateCity(id, { name, departmentId });
+
         if (!updatedCity) {
             return res.status(404).json({
                 status: "Error",
@@ -78,9 +87,17 @@ const updateCity = async (req, res) => {
 
         res.status(200).json({ status: "Ok", data: updatedCity });
     } catch (error) {
-        res.status(500).json({ status: "Error", message: error.message });
+        if (error.name === "SequelizeForeignKeyConstraintError") {
+            return res.status(400).json({
+                status: "Error",
+                message: "El departmentId especificado no existe"
+            });
+        }
+
+        res.status(500).json({ status: "Error", message: "Error al actualizar la ciudad" });
     }
 };
+
 
 const deleteCity = async (req, res) => {
     try {
@@ -93,6 +110,7 @@ const deleteCity = async (req, res) => {
         }
 
         const deletedCity = await cityService.deleteCity(id);
+
         if (!deletedCity) {
             return res.status(404).json({
                 status: "Error",
@@ -102,9 +120,21 @@ const deleteCity = async (req, res) => {
 
         res.status(200).json({ status: "Ok", message: "Ciudad eliminada correctamente" });
     } catch (error) {
-        res.status(500).json({ status: "Error", message: error.message });
+        // Si la ciudad no se puede borrar porque tiene registros relacionados
+        if (error.name === "SequelizeForeignKeyConstraintError") {
+            return res.status(400).json({
+                status: "Error",
+                message: "No se puede eliminar la ciudad porque tiene registros asociados"
+            });
+        }
+
+        res.status(500).json({
+            status: "Error",
+            message: "Error al eliminar la ciudad"
+        });
     }
 };
+
 
 module.exports = {
     getAllCities,

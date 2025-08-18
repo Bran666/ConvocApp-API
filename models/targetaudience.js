@@ -1,23 +1,25 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class TargetAudience extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      // Si en el futuro hay relaciones, se definen aquí
     }
   }
+
   TargetAudience.init({
-    name: DataTypes.STRING
+    name: {
+      type: DataTypes.STRING(100),
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'TargetAudience',
+    tableName: 'target_audiences',
+    underscored: true,
+    timestamps: false // 👈 importante
   });
+
   return TargetAudience;
 };

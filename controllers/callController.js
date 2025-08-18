@@ -1,126 +1,217 @@
-// Enlazamos el servicio(capa) de usuario
+// Enlazamos el servicio (capa) de convocatorias
 const callService = require("../services/callService");
 
 const getAllCalls = async (req, res) => {
+  try {
     const allCalls = await callService.getAllCalls();
-    if (allCalls) {
-        res.status(200).send({ status: "Ok", data: allCalls });
-    } else {
-        res.status(400).send({ status: "Error", message: null });
+    if (!allCalls || allCalls.length === 0) {
+      return res.status(404).json({
+        status: "Error",
+        message: "No se encontraron convocatorias"
+      });
     }
+    res.status(200).json({ status: "Ok", data: allCalls });
+  } catch (error) {
+    res.status(500).json({
+      status: "Error",
+      message: "Error al obtener las convocatorias: " + error.message
+    });
+  }
 };
 
-
 const getCallById = async (req, res) => {
-  const id = req.params.id;
-  const call = await callService.getCallById(id);
-  if (call) {
-    res.status(200).send({ status: "Ok", data: call });
-  } else {
-    res.status(400).send({ status: "failed", message: null });
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      return res.status(400).json({
+        status: "Error",
+        message: "El ID debe ser un número válido"
+      });
+    }
+
+    const call = await callService.getCallById(id);
+    if (!call) {
+      return res.status(404).json({
+        status: "Error",
+        message: `No se encontró la convocatoria con ID ${id}`
+      });
+    }
+
+    res.status(200).json({ status: "Ok", data: call });
+  } catch (error) {
+    res.status(500).json({
+      status: "Error",
+      message: "Error al obtener la convocatoria: " + error.message
+    });
   }
 };
 
 const createCall = async (req, res) => {
-const {
-  title,
-  description,
-  resources,
-  callLink,
-  openDate,
-  closeDate,
-  pageName,
-  pageUrl,
-  objective,
-  notes,
-  imageUrl,
-  institutionId,
-  lineId,
-  targetAudienceId,
-  interestId,
-  userId,
-  clickCount
-} = req.body;
+  try {
+    const {
+      title,
+      description,
+      resources,
+      callLink,
+      openDate,
+      closeDate,
+      pageName,
+      pageUrl,
+      objective,
+      notes,
+      imageUrl,
+      institutionId,
+      lineId,
+      targetAudienceId,
+      interestId,
+      userId,
+      clickCount
+    } = req.body;
 
-  const newCall = await callService.createCall(
-  title,
-  description,
-  resources,
-  callLink,
-  openDate,
-  closeDate,
-  pageName,
-  pageUrl,
-  objective,
-  notes,
-  imageUrl,
-  institutionId,
-  lineId,
-  targetAudienceId,
-  interestId,
-  userId,
-  clickCount);
+    if (!title || !lineId || !institutionId) {
+      return res.status(400).json({
+        status: "Error",
+        message: "Faltan campos obligatorios: title, lineId, institutionId"
+      });
+    }
 
-  if (newCall) {
-    res.status(200).send({ status: "Ok", data: newCall });
-  } else {
-    res.status(400).send({ status: "failed", message: null });
+    const newCall = await callService.createCall(
+      title,
+      description || null,
+      resources || null,
+      callLink || null,
+      openDate || null,
+      closeDate || null,
+      pageName || null,
+      pageUrl || null,
+      objective || null,
+      notes || null,
+      imageUrl || null,
+      institutionId,
+      lineId,
+      targetAudienceId || null,
+      interestId || null,
+      userId || null,
+      clickCount || 0
+    );
+
+    res.status(201).json(newCall);
+
+  } catch (error) {
+    res.status(500).json({
+      status: "Error",
+      message: error.message
+    });
   }
 };
 
+
+
+
 const updateCall = async (req, res) => {
-  const id = req.params.id;
-  const {
-  title,
-  description,
-  resources,
-  callLink,
-  openDate,
-  closeDate,
-  pageName,
-  pageUrl,
-  objective,
-  notes,
-  imageUrl,
-  institutionId,
-  lineId,
-  targetAudienceId,
-  interestId,
-  userId,
-  clickCount } = req.body;
-  const updatedUser = await callService.updateCall(
-  id,
-  title,
-  description,
-  resources,
-  callLink,
-  openDate,
-  closeDate,
-  pageName,
-  pageUrl,
-  objective,
-  notes,
-  imageUrl,
-  institutionId,
-  lineId,
-  targetAudienceId,
-  interestId,
-  userId,
-  clickCount);
-  if (updatedUser) {
-    res.status(200).send({ status: "Ok", data: updatedUser });
-  } else {
-    res.status(400).send({ status: "failed", message: null });
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      return res.status(400).json({
+        status: "Error",
+        message: "El ID debe ser un número válido"
+      });
+    }
+
+    const {
+      title,
+      description,
+      resources,
+      callLink,
+      openDate,
+      closeDate,
+      pageName,
+      pageUrl,
+      objective,
+      notes,
+      imageUrl,
+      institutionId,
+      lineId,
+      targetAudienceId,
+      interestId,
+      userId,
+      clickCount
+    } = req.body;
+
+    const updatedCall = await callService.updateCall(
+      id,
+      title,
+      description || null,
+      resources || null,
+      callLink || null,
+      openDate || null,
+      closeDate || null,
+      pageName || null,
+      pageUrl || null,
+      objective || null,
+      notes || null,
+      imageUrl || null,
+      institutionId || null,
+      lineId || null,
+      targetAudienceId || null,
+      interestId || null,
+      userId || null,
+      clickCount || 0
+    );
+
+    if (!updatedCall) {
+      return res.status(404).json({
+        status: "Error",
+        message: `No se encontró la convocatoria con ID ${id}`
+      });
+    }
+
+    res.status(200).json({
+      status: "Ok",
+      message: "Convocatoria actualizada correctamente",
+      data: updatedCall
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "Error",
+      message: "Error al actualizar la convocatoria: " + error.message
+    });
   }
 };
 
 const deleteCall = async (req, res) => {
-  const id = req.params.id;
-  const deletedCall = await callService.deleteCall(id);
-  if (deletedCall) {
-    res.status(200).send({ status: "Ok", data: deletedCall });
-  } else {
-    res.status(400).send({ status: "failed", message: null });
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      return res.status(400).json({
+        status: "Error",
+        message: "El ID debe ser un número válido"
+      });
+    }
+
+    const deletedCall = await callService.deleteCall(id);
+    if (!deletedCall) {
+      return res.status(404).json({
+        status: "Error",
+        message: `No se encontró la convocatoria con ID ${id}`
+      });
+    }
+
+    res.status(200).json({
+      status: "Ok",
+      message: "Convocatoria eliminada correctamente"
+    });
+  } catch (error) {
+    if (error.name === "SequelizeForeignKeyConstraintError") {
+      return res.status(400).json({
+        status: "Error",
+        message: "No se puede eliminar la convocatoria porque está asociada a otros registros (ej: favoritos)"
+      });
+    }
+    res.status(500).json({
+      status: "Error",
+      message: "Error al eliminar la convocatoria: " + error.message
+    });
   }
 };
 

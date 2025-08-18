@@ -1,24 +1,29 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Interest extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      // Por ahora, sin relaciones directas
     }
   }
+
   Interest.init({
-    name: DataTypes.STRING,
-    description: DataTypes.TEXT
+    name: {
+      type: DataTypes.STRING(100),
+      allowNull: false
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    }
   }, {
     sequelize,
     modelName: 'Interest',
+    tableName: 'interests',
+    underscored: true,
+    timestamps: false // 👈 porque en la tabla no hay created_at ni updated_at
   });
+
   return Interest;
 };

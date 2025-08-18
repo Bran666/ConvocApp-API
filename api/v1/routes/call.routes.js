@@ -5,8 +5,8 @@ const router = Router();
 
 router.get('/', callController.getAllCalls);
 router.get('/:id', callController.getCallById);
-router.post('/', callController.createCall);
-router.put('/:id', callController.updateCall);
-router.delete('/:id', callController.deleteCall);
+router.post('/new', callController.createCall);
+router.put('/update/:id', callController.updateCall);
+router.delete('/delete/:id', callController.deleteCall);
 
 module.exports = router;

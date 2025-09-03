@@ -1,4 +1,3 @@
-const db = require("../../../models");
 const requirementCheckController = require("../../../controllers/requirementCheckController");
 const { Router } = require("express");
 const router = Router();
@@ -14,8 +13,8 @@ router.get("/testRequirementCheckApi", (req, res) => {
 // Rutas de requirementCheck con los verbos HTTP
 router.get('/', requirementCheckController.getAllRequirementChecks);
 router.get('/:id', requirementCheckController.getRequirementCheckById);
-router.post('/new', requirementCheckController.createRequirementCheck);
-router.put('/update/:id', requirementCheckController.updateRequirementCheck);
-router.delete('/delete/:id', requirementCheckController.deleteRequirementCheck);
+router.post('/', requirementCheckController.createRequirementCheck);
+router.put('/:id', requirementCheckController.updateRequirementCheck);
+router.delete('/:id', requirementCheckController.deleteRequirementCheck);
 
 module.exports = router;

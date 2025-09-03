@@ -1,5 +1,4 @@
 // routes/api/v1/roles.js
-const db = require("../../../models");
 const roleController = require("../../../controllers/roleController");
 const { Router } = require("express");
 const router = Router();
@@ -15,8 +14,8 @@ router.get("/testRoleApi", (req, res) => {
 // Rutas de roles con los verbos HTTP
 router.get('/', roleController.getAllRoles);
 router.get('/:id', roleController.getRoleById);
-router.post('/new', roleController.createRole);
-router.put('/update/:id', roleController.updateRole);
-router.delete('/delete/:id', roleController.deleteRole);
+router.post('/', roleController.createRole);
+router.put('/:id', roleController.updateRole);
+router.delete('/:id', roleController.deleteRole);
 
 module.exports = router;

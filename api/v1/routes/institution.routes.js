@@ -1,4 +1,3 @@
-const db = require("../../../models");
 const institutionController = require("../../../controllers/institutionController");
 const { Router } = require("express");
 const router = Router();
@@ -14,8 +13,8 @@ router.get("/testInstitutionApi", (req, res) => {
 // Rutas de institutions con los verbos HTTP
 router.get('/', institutionController.getAllInstitutions);
 router.get('/:id', institutionController.getInstitutionById);
-router.post('/new', institutionController.createInstitution);
-router.put('/update/:id', institutionController.updateInstitution);
-router.delete('/delete/:id', institutionController.deleteInstitution);
+router.post('/', institutionController.createInstitution);
+router.put('/:id', institutionController.updateInstitution);
+router.delete('/:id', institutionController.deleteInstitution);
 
 module.exports = router;

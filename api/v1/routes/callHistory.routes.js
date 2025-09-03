@@ -1,4 +1,3 @@
-const db = require("../../../models");
 const callHistoryController = require("../../../controllers/callHistoryController");
 const { Router } = require("express");
 const router = Router();
@@ -14,8 +13,8 @@ router.get("/testCallHistoryApi", (req, res) => {
 // Rutas de callHistory con los verbos HTTP
 router.get("/", callHistoryController.getAllCallHistories);
 router.get("/:id", callHistoryController.getCallHistoryById);
-router.post("/new", callHistoryController.createCallHistory);
-router.put("/update/:id", callHistoryController.updateCallHistory);
-router.delete("/delete/:id", callHistoryController.deleteCallHistory);
+router.post("/", callHistoryController.createCallHistory);
+router.put("/:id", callHistoryController.updateCallHistory);
+router.delete("/:id", callHistoryController.deleteCallHistory);
 
 module.exports = router;

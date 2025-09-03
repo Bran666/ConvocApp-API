@@ -1,4 +1,3 @@
-const db = require("../../../models");
 const requirementGroupController = require("../../../controllers/requirementGroupController");
 const { Router } = require("express");
 const router = Router();
@@ -14,8 +13,8 @@ router.get("/testRequirementGroupApi", (req, res) => {
 // Rutas de requirementGroup con los verbos HTTP
 router.get('/', requirementGroupController.getAllRequirementGroups);
 router.get('/:id', requirementGroupController.getRequirementGroupById);
-router.post('/new', requirementGroupController.createRequirementGroup);
-router.put('/update/:id', requirementGroupController.updateRequirementGroup);
-router.delete('/delete/:id', requirementGroupController.deleteRequirementGroup);
+router.post('/', requirementGroupController.createRequirementGroup);
+router.put('/:id', requirementGroupController.updateRequirementGroup);
+router.delete('/:id', requirementGroupController.deleteRequirementGroup);
 
 module.exports = router;

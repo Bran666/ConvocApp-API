@@ -1,4 +1,3 @@
-const db = require("../../../models");
 const lineController = require("../../../controllers/lineController");
 const { Router } = require("express");
 const router = Router();
@@ -14,8 +13,8 @@ router.get("/testLineApi", (req, res) => {
 // Rutas de lines con los verbos HTTP
 router.get('/', lineController.getAllLines);
 router.get('/:id', lineController.getLineById);
-router.post('/new', lineController.createLine);
-router.put('/update/:id', lineController.updateLine);
-router.delete('/delete/:id', lineController.deleteLine);
+router.post('/', lineController.createLine);
+router.put('/:id', lineController.updateLine);
+router.delete('/:id', lineController.deleteLine);
 
 module.exports = router;

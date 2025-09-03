@@ -1,4 +1,3 @@
-const db = require("../../../models");
 const userInterestController = require("../../../controllers/userInterestController");
 const { Router } = require("express");
 const router = Router();
@@ -14,8 +13,8 @@ router.get("/testUserInterestApi", (req, res) => {
 // Rutas de user_interests con los verbos HTTP
 router.get('/', userInterestController.getAllUserInterests);
 router.get('/:userId/:interestId', userInterestController.getUserInterestById);
-router.post('/new', userInterestController.createUserInterest);
-router.put('/update/:userId/:interestId', userInterestController.updateUserInterest);
-router.delete('/delete/:userId/:interestId', userInterestController.deleteUserInterest);
+router.post('/', userInterestController.createUserInterest);
+router.put('/:userId/:interestId', userInterestController.updateUserInterest);
+router.delete('/:userId/:interestId', userInterestController.deleteUserInterest);
 
 module.exports = router;

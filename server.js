@@ -1,8 +1,7 @@
-//Llamado e inicializacion d dependenccias
-const express = require("express"); // se incluye el franwork express
+const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
-const app = express(); //instancia de Express
+const app = express();
 
 //configuraciones
 app.set("port", process.env.PORT || 4000);
@@ -13,8 +12,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //Routes
-// app.use("/api/users", require("./api/users")); //se incluye el router de usuarios
-
 app.use("/api/v1/users", require("./api/v1/routes/user.routes"));
 app.use("/api/v1/calls", require("./api/v1/routes/call.routes"));
 app.use("/api/v1/cities", require("./api/v1/routes/city.routes"));
@@ -33,7 +30,7 @@ app.use("/api/v1/requirementChecks", require("./api/v1/routes/requirementCheck.r
 app.use("/api/v1/requirementGroups", require("./api/v1/routes/requirementGroup.routes"));
 app.use("/api/v1/userInterests", require("./api/v1/routes/userInterest.routes"));
 app.use("/api/v1/institutions", require("./api/v1/routes/institution.routes"));
-//Se incia el servidor en el puesto 4000 
+
 app.listen(app.get("port"), () => {
   console.log(`server running on port ${app.get("port")}  😜😉`);
 });

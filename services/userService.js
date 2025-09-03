@@ -33,7 +33,7 @@ const createUser = async (name, email, password, phone, is_active, role_id) => {
     });
     return newUser;
   } catch (error) {
-    throw error; // 👈 no lo tapes con un Error nuevo, así se conserva error.name
+    throw error;
   }
 };
 
@@ -69,7 +69,6 @@ const deleteUser = async (id) => {
     await user.destroy();
     return { message: "Usuario eliminado correctamente" };
   } catch (error) {
-    // Manejo especial de restricciones de FK (si el usuario está relacionado con otras tablas)
     if (error.name === "SequelizeForeignKeyConstraintError") {
       throw new Error("No se puede eliminar el usuario porque está asociado a otros registros.");
     }

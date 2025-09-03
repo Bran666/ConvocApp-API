@@ -1,4 +1,3 @@
-const db = require("../../../models");
 const callAdditionalInterestController = require("../../../controllers/callAdditionalInterestController");
 const { Router } = require("express");
 const router = Router();
@@ -14,8 +13,8 @@ router.get("/testCallAdditionalInterestApi", (req, res) => {
 // Rutas de callAdditionalInterest
 router.get("/", callAdditionalInterestController.getAllCallAdditionalInterests);
 router.get("/:callId/:interestId", callAdditionalInterestController.getCallAdditionalInterestById);
-router.post("/new", callAdditionalInterestController.createCallAdditionalInterest);
-router.put("/update/:callId/:interestId", callAdditionalInterestController.updateCallAdditionalInterest);
-router.delete("/delete/:callId/:interestId", callAdditionalInterestController.deleteCallAdditionalInterest);
+router.post("/", callAdditionalInterestController.createCallAdditionalInterest);
+router.put("/:callId/:interestId", callAdditionalInterestController.updateCallAdditionalInterest);
+router.delete("/:callId/:interestId", callAdditionalInterestController.deleteCallAdditionalInterest);
 
 module.exports = router;

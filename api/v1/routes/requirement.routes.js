@@ -1,4 +1,3 @@
-const db = require("../../../models");
 const requirementController = require("../../../controllers/requirementController");
 const { Router } = require("express");
 const router = Router();
@@ -15,7 +14,7 @@ router.get("/testRequirementApi", (req, res) => {
 router.get('/', requirementController.getAllRequirements);
 router.get('/:id', requirementController.getRequirementById);
 router.post('/new', requirementController.createRequirement);
-router.put('/update/:id', requirementController.updateRequirement);
-router.delete('/delete/:id', requirementController.deleteRequirement);
+router.put('/:id', requirementController.updateRequirement);
+router.delete('/:id', requirementController.deleteRequirement);
 
 module.exports = router;

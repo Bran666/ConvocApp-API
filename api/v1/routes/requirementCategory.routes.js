@@ -1,4 +1,3 @@
-const db = require("../../../models");
 const requirementCategoryController = require("../../../controllers/requirementCategoryController");
 const { Router } = require("express");
 const router = Router();
@@ -14,8 +13,8 @@ router.get("/testRequirementCategoryApi", (req, res) => {
 // Rutas de requirementCategory con los verbos HTTP
 router.get('/', requirementCategoryController.getAllRequirementCategories);
 router.get('/:id', requirementCategoryController.getRequirementCategoryById);
-router.post('/new', requirementCategoryController.createRequirementCategory);
-router.put('/update/:id', requirementCategoryController.updateRequirementCategory);
-router.delete('/delete/:id', requirementCategoryController.deleteRequirementCategory);
+router.post('/', requirementCategoryController.createRequirementCategory);
+router.put('/:id', requirementCategoryController.updateRequirementCategory);
+router.delete('/:id', requirementCategoryController.deleteRequirementCategory);
 
 module.exports = router;

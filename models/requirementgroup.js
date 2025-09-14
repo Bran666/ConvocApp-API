@@ -30,12 +30,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     categoryId: {
       type: DataTypes.INTEGER,
-      field: 'category_id'
+      field: 'categoryId'
     }
   }, {
     sequelize,
     modelName: 'RequirementGroup',
-    tableName: 'requirement_groups',
+    tableName: 'RequirementGroups',
     underscored: true,
     timestamps: false // 👈 porque en la tabla no hay createdAt/updatedAt
   });

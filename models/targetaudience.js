@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'TargetAudience',
-    tableName: 'target_audiences',
+    tableName: 'TargetAudiences',
     underscored: true,
     timestamps: false // 👈 importante
   });

@@ -19,12 +19,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     departmentId: {
       type: DataTypes.INTEGER,
-      field: 'department_id'
+      field: 'department_id'  
     }
   }, {
     sequelize,
     modelName: 'City',
-    tableName: 'cities',
+    tableName: 'Cities',
     underscored: true,
     timestamps: false
   });

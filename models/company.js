@@ -15,74 +15,74 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     taxId: {
       type: DataTypes.STRING,
-      field: 'tax_id'
+      field: 'taxId'
     },
     legalName: {
       type: DataTypes.STRING,
-      field: 'legal_name'
+      field: 'legalName'
     },
     address: DataTypes.STRING,
     phone: DataTypes.STRING,
     website: DataTypes.STRING,
     employeeCount: {
       type: DataTypes.INTEGER,
-      field: 'employee_count'
+      field: 'employeeCount'
     },
     economicSector: {
       type: DataTypes.STRING,
-      field: 'economic_sector'
+      field: 'economicSector'
     },
     description: DataTypes.TEXT,
     existenceYears: {
       type: DataTypes.INTEGER,
-      field: 'existence_years'
+      field: 'existenceYears'
     },
     legalDocument: {
       type: DataTypes.STRING,
-      field: 'legal_document'
+      field: 'legalDocument'
     },
     legalFirstName: {
       type: DataTypes.STRING,
-      field: 'legal_first_name'
+      field: 'legalFirstName'
     },
     legalLastName: {
       type: DataTypes.STRING,
-      field: 'legal_last_name'
+      field: 'legalLastName'
     },
     legalRepresentativeName: {
       type: DataTypes.STRING,
-      field: 'legal_representative_name'
+      field: 'legalRepresentativeName'
     },
     legalRepresentativeRole: {
       type: DataTypes.STRING,
-      field: 'legal_representative_role'
+      field: 'legalRepresentativeRole'
     },
     legalRepresentativePhone: {
       type: DataTypes.STRING,
-      field: 'legal_representative_phone'
+      field: 'legalRepresentativePhone'
     },
     legalRepresentativeEmail: {
       type: DataTypes.STRING,
-      field: 'legal_representative_email'
+      field: 'legalRepresentativeEmail'
     },
     landline: DataTypes.STRING,
     legalMobile: {
       type: DataTypes.STRING,
-      field: 'legal_mobile'
+      field: 'legalMobile'
     },
     email: DataTypes.STRING,
     legalPosition: {
       type: DataTypes.STRING,
-      field: 'legal_position'
+      field: 'legalPosition'
     },
     cityId: {
       type: DataTypes.INTEGER,
-      field: 'city_id'
+      field: 'cityId'
     }
   }, {
     sequelize,
     modelName: 'Company',
-    tableName: 'companies',
+    tableName: 'Companies',
     underscored: true,
     timestamps: false // igual que en City
   });

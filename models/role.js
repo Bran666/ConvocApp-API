@@ -17,8 +17,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Role',
-    tableName: 'roles',
-    underscored: true,
+    tableName: 'Roles',
+      underscored: true,
     timestamps: false // 👈 para que no intente manejar created_at / updated_at
   });
 

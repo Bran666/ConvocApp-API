@@ -86,7 +86,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     institutionId: {
       type: DataTypes.INTEGER,
-      field: 'institution_id'
+      field: 'institutionId'
     },
     lineId: {
       type: DataTypes.INTEGER,
@@ -117,7 +117,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'CallHistory',
-    tableName: 'call_history',
+    tableName: 'CallHistories',
     underscored: true,
     timestamps: false // 👈 porque en la tabla no existe updated_at
   });

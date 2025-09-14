@@ -22,19 +22,19 @@ module.exports = (sequelize, DataTypes) => {
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: 'user_id',
+      field: 'userId',
       primaryKey: true
     },
     interestId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: 'interest_id',
+      field: 'interestId',
       primaryKey: true
     }
   }, {
     sequelize,
     modelName: 'UserInterest',
-    tableName: 'user_interests',
+    tableName: 'UserInterests',
     underscored: true,
     timestamps: false
   });

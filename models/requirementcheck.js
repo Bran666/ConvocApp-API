@@ -26,20 +26,20 @@ module.exports = (sequelize, DataTypes) => {
     },
     isChecked: {
       type: DataTypes.BOOLEAN,
-      field: 'is_checked'
+      field: 'isChecked'
     },
     companyId: {
       type: DataTypes.INTEGER,
-      field: 'company_id'
+      field: 'companyId'
     },
     requirementId: {
       type: DataTypes.INTEGER,
-      field: 'requirement_id'
+      field: 'requirementId'
     }
   }, {
     sequelize,
     modelName: 'RequirementCheck',
-    tableName: 'requirement_checks',
+    tableName: 'RequirementChecks',
     underscored: true,
     timestamps: false // 👈 porque en la tabla no hay createdAt/updatedAt
   });

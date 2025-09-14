@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'RequirementCategory',
-    tableName: 'requirement_categories',
+    tableName: 'RequirementCategories',
     underscored: true,
     timestamps: false // 👈 tu tabla no tiene createdAt/updatedAt
   });

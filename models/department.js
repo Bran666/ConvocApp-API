@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Department.hasMany(models.City, { 
         foreignKey: 'departmentId',
-        as: 'cities'
+        as: 'Cities'
       });
     }
   }
@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Department',
-    tableName: 'departments',
+    tableName: 'Departments',
     timestamps: false
   });
 

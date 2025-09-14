@@ -18,21 +18,21 @@ module.exports = (sequelize, DataTypes) => {
   Favorite.init({
     userId: {
       type: DataTypes.INTEGER,
-      field: 'user_id'
+      field: 'userId'
     },
     callId: {
       type: DataTypes.INTEGER,
-      field: 'call_id'
+      field: 'callId'
     },
     favoritedAt: {
       type: DataTypes.DATE,
-      field: 'favorited_at',
+      field: 'favoritedAt',
       defaultValue: DataTypes.NOW
     }
   }, {
     sequelize,
     modelName: 'Favorite',
-    tableName: 'favorites',
+    tableName: 'Favorites',
     underscored: true,
     timestamps: false
   });

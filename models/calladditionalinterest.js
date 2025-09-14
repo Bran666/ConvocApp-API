@@ -21,18 +21,18 @@ module.exports = (sequelize, DataTypes) => {
   CallAdditionalInterest.init({
     callId: {
       type: DataTypes.INTEGER,
-      field: 'call_id',
+      field: 'callId',
       primaryKey: true
     },
     interestId: {
       type: DataTypes.INTEGER,
-      field: 'interest_id',
+      field: 'interestId',
       primaryKey: true
     }
   }, {
     sequelize,
     modelName: 'CallAdditionalInterest',
-    tableName: 'call_additional_interests',
+    tableName: 'CallAdditionalInterests',
     underscored: true,
     timestamps: false // 👈 porque la tabla no tiene created_at ni updated_at
   });

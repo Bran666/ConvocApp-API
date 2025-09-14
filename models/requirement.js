@@ -20,16 +20,16 @@ module.exports = (sequelize, DataTypes) => {
     notes: DataTypes.TEXT,
     institutionId: {
       type: DataTypes.INTEGER,
-      field: 'institution_id'
+      field: 'institutionId'
     },
     groupId: {
       type: DataTypes.INTEGER,
-      field: 'group_id'
+      field: 'groupId'
     }
   }, {
     sequelize,
     modelName: 'Requirement',
-    tableName: 'requirements',
+    tableName: 'Requirements',
     underscored: true,
     timestamps: false
   });

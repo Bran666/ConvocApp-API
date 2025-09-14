@@ -1,17 +1,34 @@
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
+const cors = require("cors"); 
+
 const app = express();
 
-//configuraciones
+// ==============================
+// Configuraciones
+// ==============================
 app.set("port", process.env.PORT || 4000);
 
-//Middlewares
+// ==============================
+// Middlewares
+// ==============================
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-//Routes
+// 👇 Habilitar CORS para permitir peticiones desde otros orígenes
+app.use(
+  cors({
+    origin: "*", // Permite todos los orígenes (puedes restringirlo a tu dominio si quieres más seguridad)
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Métodos permitidos
+    allowedHeaders: ["Content-Type", "Authorization"], // Headers permitidos
+  })
+);
+
+// ==============================
+// Rutas
+// ==============================
 app.use("/api/v1/users", require("./api/v1/routes/user.routes"));
 app.use("/api/v1/calls", require("./api/v1/routes/call.routes"));
 app.use("/api/v1/cities", require("./api/v1/routes/city.routes"));
@@ -31,6 +48,9 @@ app.use("/api/v1/requirementGroups", require("./api/v1/routes/requirementGroup.r
 app.use("/api/v1/userInterests", require("./api/v1/routes/userInterest.routes"));
 app.use("/api/v1/institutions", require("./api/v1/routes/institution.routes"));
 
+// ==============================
+// Servidor
+// ==============================
 app.listen(app.get("port"), () => {
-  console.log(`server running on port ${app.get("port")}  😜😉`);
+  console.log(`✅ Server running on port ${app.get("port")} 😜😉`);
 });

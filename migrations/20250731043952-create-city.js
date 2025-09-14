@@ -1,5 +1,4 @@
 'use strict';
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Cities', {
@@ -13,10 +12,14 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      department_id: { // en BD con snake_case
+      department_id: {
         type: Sequelize.INTEGER,
         references: {
+
           model: 'Departments', // nombre real en BD
+
+          model: 'departments', // 👈 mismo nombre que arriba
+
           key: 'id'
         },
         onUpdate: 'CASCADE',

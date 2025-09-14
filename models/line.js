@@ -21,6 +21,10 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Line',
     tableName: 'Lines',
+
+    modelName: 'Line',   // 👈 singular, con mayúscula
+    tableName: 'lines',  // 👈 nombre real en la BD
+
     underscored: true,
     timestamps: false
   });

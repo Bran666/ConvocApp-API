@@ -4,6 +4,7 @@ const roleService = require("../services/roleService");
 const getAllRoles = async (req, res) => {
     try {
         const allRoles = await roleService.getAllRoles();
+        
         if (!allRoles || allRoles.length === 0) {
             return res.status(404).json({
                 status: "Error",

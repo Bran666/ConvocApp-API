@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('RequirementGroups', {
+    await queryInterface.createTable('requirement_groups', { // 👈 snake_case
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -10,28 +10,31 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(100),
+        allowNull: false
       },
-      categoryId: {
+      category_id: {   // 👈 en snake_case porque usas underscored: true
         type: Sequelize.INTEGER,
         references: {
-          model: 'RequirementCategories', // nombre de la tabla a la que hace referencia
+          model: 'requirement_categories', // 👈 también snake_case
           key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL' // o 'CASCADE', según tu lógica de negocio
+        onDelete: 'SET NULL'
       },
-      createdAt: {
+      created_at: {   // 👈 snake_case
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('RequirementGroups');
+    await queryInterface.dropTable('requirement_groups'); // 👈 mismo nombre
   }
 };

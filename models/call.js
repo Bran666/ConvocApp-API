@@ -43,69 +43,84 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
+
     title: {
       type: DataTypes.STRING,
       allowNull: false
     },
+
     description: DataTypes.TEXT,
     resources: DataTypes.TEXT,
     callLink: {
       type: DataTypes.STRING,
-      field: 'call_link'
+      field: 'callLink'
     },
+
     openDate: {
       type: DataTypes.DATE,
-      field: 'open_date'
+      field: 'openDate'
     },
+
     closeDate: {
       type: DataTypes.DATE,
-      field: 'close_date'
+      field: 'closeDate'
     },
+
     pageName: {
       type: DataTypes.STRING,
-      field: 'page_name'
+      field: 'pageName'
     },
+
     pageUrl: {
       type: DataTypes.STRING,
-      field: 'page_url'
+      field: 'pageUrl'
     },
+
     objective: DataTypes.TEXT,
+
     notes: DataTypes.TEXT,
+
     imageUrl: {
       type: DataTypes.STRING,
-      field: 'image_url'
+      field: 'imageUrl'
     },
+
     institutionId: {
       type: DataTypes.INTEGER,
-      field: 'institution_id',
+      field: 'institutionId',
       allowNull: false
     },
+
     lineId: {
       type: DataTypes.INTEGER,
-      field: 'line_id',
+      field: 'lineId',
       allowNull: false
     },
+
     targetAudienceId: {
       type: DataTypes.INTEGER,
-      field: 'target_audience_id'
+      field: 'targetAudienceId'
     },
+
     interestId: {
       type: DataTypes.INTEGER,
-      field: 'interest_id'
+      field: 'interestId'
     },
+
     userId: {
       type: DataTypes.INTEGER,
-      field: 'user_id'
+      field: 'userId'
     },
+
     clickCount: {
       type: DataTypes.INTEGER,
-      field: 'click_count',
+      field: 'clickCount',
       defaultValue: 0
     }
   }, {
     sequelize,
     modelName: 'Call',
-    tableName: 'calls',
+    tableName: 'Calls',
     underscored: true,
     timestamps: false
   });

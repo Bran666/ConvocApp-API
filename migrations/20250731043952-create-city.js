@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('cities', {
+    await queryInterface.createTable('Cities', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -16,7 +16,7 @@ module.exports = {
       department_id: { // en BD con snake_case
         type: Sequelize.INTEGER,
         references: {
-          model: 'departments', // nombre real en BD
+          model: 'Departments', // nombre real en BD
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -33,6 +33,6 @@ module.exports = {
     });
   },
   async down(queryInterface) {
-    await queryInterface.dropTable('cities');
+    await queryInterface.dropTable('Cities');
   }
 };

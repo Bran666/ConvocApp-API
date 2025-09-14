@@ -13,7 +13,7 @@ router.get("/testRequirementApi", (req, res) => {
 // Rutas de requirements con los verbos HTTP
 router.get('/', requirementController.getAllRequirements);
 router.get('/:id', requirementController.getRequirementById);
-router.post('/new', requirementController.createRequirement);
+router.post('/', requirementController.createRequirement);
 router.put('/:id', requirementController.updateRequirement);
 router.delete('/:id', requirementController.deleteRequirement);
 

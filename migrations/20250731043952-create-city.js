@@ -12,24 +12,20 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      department_id: {
+      departmentId: {   // 👈 camelCase aquí
         type: Sequelize.INTEGER,
         references: {
-
-          model: 'Departments', // nombre real en BD
-
-          model: 'departments', // 👈 mismo nombre que arriba
-
+          model: 'Departments', // 👈 mismo nombre exacto que arriba
           key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      created_at: {
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
       }

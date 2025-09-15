@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true // 🔹 Esto hace que use el IDENTITY de Postgres
+      autoIncrement: true
     },
     name: {
       type: DataTypes.STRING,
@@ -24,8 +24,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Department',
-    tableName: 'Departments',
-    timestamps: false
+    tableName: 'Departments',  // ✅ mayúscula
+    timestamps: true           // ✅ porque usaste createdAt/updatedAt en la migración
   });
 
   return Department;

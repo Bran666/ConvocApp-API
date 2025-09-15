@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         as: 'category'
       });
 
-      // Si luego tienes relación con Requirements:
+      // Relación con Requirements
       RequirementGroup.hasMany(models.Requirement, {
         foreignKey: 'groupId',
         as: 'requirements'
@@ -29,15 +29,13 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     categoryId: {
-      type: DataTypes.INTEGER,
-      field: 'categoryId'
+      type: DataTypes.INTEGER
     }
   }, {
     sequelize,
     modelName: 'RequirementGroup',
     tableName: 'RequirementGroups',
-    underscored: true,
-    timestamps: false // 👈 porque en la tabla no hay createdAt/updatedAt
+    timestamps: true
   });
 
   return RequirementGroup;

@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('calls', {
+    await queryInterface.createTable('Calls', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,51 +12,57 @@ module.exports = {
       title: Sequelize.STRING,
       description: Sequelize.TEXT,
       resources: Sequelize.TEXT,
-      call_link: Sequelize.STRING,   // 👈 en snake_case
-      open_date: Sequelize.DATE,
-      close_date: Sequelize.DATE,
-      page_name: Sequelize.STRING,
-      page_url: Sequelize.STRING,
+      callLink: Sequelize.STRING,   // 👈 snake_case
+      openDate: Sequelize.DATE,
+      closeDate: Sequelize.DATE,
+      pageName: Sequelize.STRING,
+      pageUrl: Sequelize.STRING,
       objective: Sequelize.TEXT,
       notes: Sequelize.TEXT,
-      image_url: Sequelize.STRING,
-      institution_id: {
+      imageUrl: Sequelize.STRING,
+
+      institutionId: {
         type: Sequelize.INTEGER,
-        references: { model: 'institutions', key: 'id' },
+        references: { model: 'Institutions', key: 'id' }, // 👈 minúsculas
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      line_id: {
+      lineId: {
         type: Sequelize.INTEGER,
-        references: { model: 'lines', key: 'id' },
+        references: { model: 'Lines', key: 'id' }, // 👈 minúsculas
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      target_audience_id: {
+      targetAudienceId: {
         type: Sequelize.INTEGER,
-        references: { model: 'target_audiences', key: 'id' },
+        references: { model: 'TargetAudiences', key: 'id' }, // 👈 minúsculas
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      interest_id: {
+      interestId: {
         type: Sequelize.INTEGER,
-        references: { model: 'interests', key: 'id' },
+        references: { model: 'Interests', key: 'id' }, // 👈 minúsculas
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      user_id: {
+      userId: {
         type: Sequelize.INTEGER,
-        references: { model: 'users', key: 'id' },
+        references: { model: 'Users', key: 'id' }, // 👈 minúsculas
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      click_count: Sequelize.INTEGER,
-      created_at: {
+
+      clickCount: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0
+      },
+
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
@@ -64,6 +70,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('calls');
+    await queryInterface.dropTable('Calls');
   }
 };

@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('institutions', {   // 👈 minúscula
+    await queryInterface.createTable('Institutions', {   // 👈 minúscula
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -28,6 +28,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('institutions');  // 👈 mismo nombre en minúscula
+    await queryInterface.dropTable('Institutions');  // 👈 mismo nombre en minúscula
   }
 };

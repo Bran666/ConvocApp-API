@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'RequirementCategories',
     underscored: true,
     timestamps: false, // 👈 tu tabla no tiene createdAt/updatedAt
-    tableName: 'requirement_categories',
+    tableName: 'RequirementCategories',
     underscored: true,  // 👈 Sequelize traduce createdAt → created_at
     timestamps: true    // 👈 Sequelize manejará created_at y updated_at
 

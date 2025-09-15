@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('departments', { // 👈 minúsculas
+    await queryInterface.createTable('Departments', { // 👈 PascalCase para que coincida con el modelo
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -9,19 +9,20 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
-      created_at: { // 👈 consistente con snake_case
+      createdAt: {   // 👈 camelCase para timestamps
         allowNull: false,
         type: Sequelize.DATE
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
       }
     });
   },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('departments');
+  async down(queryInterface) {
+    await queryInterface.dropTable('Departments');
   }
 };

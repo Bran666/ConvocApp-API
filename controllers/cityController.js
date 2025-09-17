@@ -50,10 +50,12 @@ const createCity = async (req, res) => {
             });
         }
 
-        const newCity = await cityService.createCity({ name, departmentId });
+        // Cambio aquí: pasar los parámetros por separado
+        const newCity = await cityService.createCity(name, departmentId);
         res.status(201).json({ status: "Ok", data: newCity });
     } catch (error) {
-        // Detectamos error de llave foránea (departamento no existe)
+        console.error('Error en createCity (controller):', error);
+
         if (error.name === "SequelizeForeignKeyConstraintError") {
             return res.status(400).json({
                 status: "Error",
@@ -61,7 +63,10 @@ const createCity = async (req, res) => {
             });
         }
 
-        res.status(500).json({ status: "Error", message: "Error al crear la ciudad" });
+        res.status(500).json({
+            status: "Error",
+            message: error.message || "Error al crear la ciudad"
+        });
     }
 };
 

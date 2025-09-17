@@ -30,8 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Requirement',
     tableName: 'Requirements',
-    underscored: true,
-    timestamps: false
+    timestamps: true
   });
 
   return Requirement;

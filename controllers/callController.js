@@ -59,7 +59,6 @@ const createCall = async (req, res) => {
       pageUrl,
       objective,
       notes,
-      imageUrl,
       institutionId,
       lineId,
       targetAudienceId,
@@ -67,6 +66,13 @@ const createCall = async (req, res) => {
       userId,
       clickCount
     } = req.body;
+
+    // si viene archivo de imagen
+    let imageUrl = req.body.imageUrl || null;
+    if (req.file) {
+      // ⚡ aquí decides si guardas en disco o BD
+      imageUrl = `/uploads/${req.file.originalname}`;
+    }
 
     if (!title || !lineId || !institutionId) {
       return res.status(400).json({
@@ -86,7 +92,7 @@ const createCall = async (req, res) => {
       pageUrl || null,
       objective || null,
       notes || null,
-      imageUrl || null,
+      imageUrl,
       institutionId,
       lineId,
       targetAudienceId || null,
@@ -104,9 +110,6 @@ const createCall = async (req, res) => {
     });
   }
 };
-
-
-
 
 const updateCall = async (req, res) => {
   try {
@@ -129,7 +132,6 @@ const updateCall = async (req, res) => {
       pageUrl,
       objective,
       notes,
-      imageUrl,
       institutionId,
       lineId,
       targetAudienceId,
@@ -137,6 +139,11 @@ const updateCall = async (req, res) => {
       userId,
       clickCount
     } = req.body;
+
+    let imageUrl = req.body.imageUrl || null;
+    if (req.file) {
+      imageUrl = `/uploads/${req.file.originalname}`;
+    }
 
     const updatedCall = await callService.updateCall(
       id,
@@ -150,7 +157,7 @@ const updateCall = async (req, res) => {
       pageUrl || null,
       objective || null,
       notes || null,
-      imageUrl || null,
+      imageUrl,
       institutionId || null,
       lineId || null,
       targetAudienceId || null,

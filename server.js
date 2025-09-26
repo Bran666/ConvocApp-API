@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const cors = require("cors"); 
+const path = require("path");   // 👈 AGREGA ESTO
 
 const app = express();
 
@@ -21,10 +22,16 @@ app.use(bodyParser.json());
 app.use(
   cors({
     origin: "*", // Permite todos los orígenes (puedes restringirlo a tu dominio si quieres más seguridad)
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Métodos permitidos
-    allowedHeaders: ["Content-Type", "Authorization"], // Headers permitidos
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// ==============================
+// Servir carpeta de imágenes
+// ==============================
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// 
 
 // ==============================
 // Rutas

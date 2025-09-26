@@ -1,3 +1,6 @@
+// Cargar variables de entorno desde .env
+require('dotenv').config();
+
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
@@ -16,6 +19,9 @@ app.set("port", process.env.PORT || 4000);
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// Servir archivos estáticos desde la carpeta public
+app.use(express.static('public'));
 
 // 👇 Habilitar CORS para permitir peticiones desde otros orígenes
 app.use(
@@ -47,6 +53,7 @@ app.use("/api/v1/requirementChecks", require("./api/v1/routes/requirementCheck.r
 app.use("/api/v1/requirementGroups", require("./api/v1/routes/requirementGroup.routes"));
 app.use("/api/v1/userInterests", require("./api/v1/routes/userInterest.routes"));
 app.use("/api/v1/institutions", require("./api/v1/routes/institution.routes"));
+app.use("/api/v1/auths", require("./api/v1/routes/auth.routes"));
 
 // ==============================
 // Servidor

@@ -116,42 +116,16 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: DataTypes.NOW
       },
-      // Campos adicionales del modelo de referencia que necesitas agregar
+      // Campos para restablecimiento de contraseña
       password_reset_token: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
+        defaultValue: null
       },
       password_reset_expires: {
         type: DataTypes.DATE,
-        allowNull: true
-      },
-      // Campos mapeados usando los existentes (sin agregar nuevas columnas)
-      username: {
-        type: DataTypes.VIRTUAL,
-        get() {
-          return this.name;
-        },
-        set(value) {
-          this.setDataValue('name', value);
-        }
-      },
-      institutional_email: {
-        type: DataTypes.VIRTUAL,
-        get() {
-          return this.email;
-        },
-        set(value) {
-          this.setDataValue('email', value);
-        }
-      },
-      state: {
-        type: DataTypes.VIRTUAL,
-        get() {
-          return this.is_active ? 'Activo' : 'Inactivo';
-        },
-        set(value) {
-          this.setDataValue('is_active', value === 'Activo');
-        }
+        allowNull: true,
+        defaultValue: null
       }
     },
     {

@@ -34,6 +34,18 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
+      password_reset_token: {
+        type: Sequelize.STRING,
+        allowNull: true,
+        defaultValue: null,
+        comment: 'Token para restablecimiento de contraseña'
+      },
+      password_reset_expires: {
+        type: Sequelize.DATE,
+        allowNull: true,
+        defaultValue: null,
+        comment: 'Fecha de expiración del token de restablecimiento'
+      },
       created_at: {   // 👈 usa snake_case para ser consistente
         allowNull: false,
         type: Sequelize.DATE,

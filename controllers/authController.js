@@ -116,149 +116,100 @@ module.exports = {
   },
 
   // Método forgotPassword adaptado a tus campos
-  forgotPassword: async function (req, res) {
-    try {
-      const { email } = req.body;
-      
-      if (!email) {
-        return res.status(400).json({ 
-          message: "El correo electrónico es requerido" 
-        });
-      }
+ // Método forgotPassword adaptado para enviar código
+forgotPassword: async function (req, res) {
+  try {
+    const { email } = req.body;
 
-      const user = await User.findOne({
-        where: { 
-          email: email, 
-          is_active: true
-        },
-      });
-
-      // Por seguridad, siempre retornar el mismo mensaje
-      const successMessage = "Si el email existe, recibirás un enlace para recuperar tu contraseña";
-
-      if (!user) {
-        return res.status(200).json({ 
-          message: successMessage 
-        });
-      }
-
-      // Generar un token de restablecimiento de contraseña
-      const token = crypto.randomBytes(32).toString("hex");
-      const expires = Date.now() + 1000 * 60 * 60; // expiración de 1 hora
-      
-      // Actualizar usuario con los campos de tu tabla
-      await user.update({
-        password_reset_token: token,
-        password_reset_expires: new Date(expires)
-      });
-
-      const resetLink = `${process.env.FRONTEND_URL}/reset-password.html?token=${token}`;
-      
-      // Enviar el correo electrónico
-      try {
-        await sendEmail({
-          to: user.email,
-          subject: "Recuperación de contraseña - Cronode CPIC",
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
-              <h2 style="color: #008550;">Cronode CPIC</h2>
-              <p>Hola <strong>${user.name}</strong>,</p>
-
-              <p>Recibimos una solicitud para restablecer tu contraseña. Si no realizaste esta solicitud, puedes ignorar este mensaje.</p>
-
-              <p>Para restablecer tu contraseña, haz clic en el siguiente botón:</p>
-
-              <div style="text-align: center; margin: 30px 0;">
-                <a href="${resetLink}" style="background-color: #008550; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">
-                  Restablecer Contraseña
-                </a>
-              </div>
-
-              <p>O también puedes copiar y pegar el siguiente enlace en tu navegador:</p>
-              <p style="word-break: break-all; color: #555;">${resetLink}</p>
-
-              <p>Este enlace expirará en <strong>1 hora</strong>.</p>
-
-              <hr style="margin-top: 40px;">
-              <p style="font-size: 12px; color: #888;">Este mensaje fue generado automáticamente por el Software de planificación de la FPI para grupos y ambientes de formación - C.P.I.C. No respondas a este correo.</p>
-            </div>
-          `,
-        });
-      } catch (emailError) {
-        console.error("Error al enviar email:", emailError);
-        // No fallar la solicitud si hay error de email, por seguridad
-      }
-
-      return res.status(200).json({ 
-        message: successMessage 
-      });
-
-    } catch (error) {
-      console.error("Error en forgotPassword:", error);
-      return res.status(500).json({ 
-        message: "Error al procesar la solicitud de recuperación de contraseña" 
-      });
+    if (!email) {
+      return res.status(400).json({ message: "El correo electrónico es requerido" });
     }
-  },
 
-  // Método resetPassword adaptado a tus campos
-  resetPassword: async function (req, res) {
-    try {
-      const { newPassword, token } = req.body;
-      
-      if (!newPassword || !token) {
-        return res.status(400).json({ 
-          status: 'FAILED', 
-          message: "La nueva contraseña y el token son requeridos" 
-        });
-      }
+    const user = await User.findOne({
+      where: { email: email, is_active: true },
+    });
 
-      if (newPassword.length < 6) {
-        return res.status(400).json({ 
-          status: 'FAILED', 
-          message: "La contraseña debe tener al menos 6 caracteres" 
-        });
-      }
+    // Mensaje genérico
+    const successMessage = "Si el email existe, recibirás un código de recuperación";
 
-      const user = await User.findOne({
-        where: {
-          is_active: true,
-          password_reset_token: token,
-          password_reset_expires: {
-            [Op.gt]: new Date() // Mayor que la fecha actual
-          }
-        }
-      });
-
-      if (!user) {
-        return res.status(400).json({ 
-          status: 'FAILED', 
-          message: "El token de restablecimiento es inválido o ha expirado" 
-        });
-      }
-
-      // Actualizar contraseña usando el método del modelo
-      await User.updatePassword(user.id, newPassword);
-      
-      // Limpiar los campos de reset
-      await user.update({
-        password_reset_token: null,
-        password_reset_expires: null
-      });
-
-      res.status(200).json({
-        status: 'OK', 
-        message: "Contraseña actualizada con éxito. Por favor, inicia sesión." 
-      });
-
-    } catch (error) {
-      console.error("Error en resetPassword:", error);
-      res.status(500).json({
-        status: 'FAILED', 
-        message: "Error al cambiar la contraseña" 
-      });
+    if (!user) {
+      return res.status(200).json({ message: successMessage });
     }
-  },
+
+    // 🔹 Generar código de 6 dígitos
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Expira en 10 minutos
+    const expires = Date.now() + 1000 * 60 * 10;
+
+    await user.update({
+      password_reset_token: code, // Guardamos el código
+      password_reset_expires: new Date(expires),
+    });
+
+    // 🔹 Enviar correo con el código
+    await sendEmail({
+      to: user.email,
+      subject: "Código de recuperación - Cronode CPIC",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+          <h2 style="color: #008550;">Cronode CPIC</h2>
+          <p>Hola <strong>${user.name}</strong>,</p>
+          <p>Tu código de recuperación es:</p>
+          <h1 style="text-align:center; font-size: 36px; letter-spacing: 8px; color:#008550;">
+            ${code}
+          </h1>
+          <p>Este código expirará en <strong>10 minutos</strong>.</p>
+        </div>
+      `,
+    });
+
+    return res.status(200).json({ message: successMessage });
+  } catch (error) {
+    console.error("Error en forgotPassword:", error);
+    return res.status(500).json({
+      message: "Error al procesar la solicitud de recuperación de contraseña",
+    });
+  }
+},
+
+
+ resetPassword: async function (req, res) {
+  try {
+    const { email, code, newPassword } = req.body;
+
+    if (!email || !code || !newPassword) {
+      return res.status(400).json({ message: "Correo, código y nueva contraseña son requeridos" });
+    }
+
+    const user = await User.findOne({
+      where: {
+        email,
+        is_active: true,
+        password_reset_token: code,
+        password_reset_expires: { [Op.gt]: new Date() },
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Código inválido o expirado" });
+    }
+
+    await User.updatePassword(user.id, newPassword);
+
+    // limpiar código
+    await user.update({
+      password_reset_token: null,
+      password_reset_expires: null,
+    });
+
+    return res.status(200).json({ message: "Contraseña actualizada con éxito" });
+  } catch (error) {
+    console.error("Error en resetPassword:", error);
+    return res.status(500).json({ message: "Error al cambiar la contraseña" });
+  }
+},
+
 
   // Método adicional para cambiar contraseña (cuando el usuario está autenticado)
   changePassword: async function (req, res) {
@@ -356,5 +307,33 @@ module.exports = {
         message: "Token inválido o expirado"
       });
     }
+  },
+  verifyCode: async function (req, res) {
+  try {
+    const { email, code } = req.body;
+
+    if (!email || !code) {
+      return res.status(400).json({ message: "Correo y código son requeridos" });
+    }
+
+    const user = await User.findOne({
+      where: {
+        email,
+        is_active: true,
+        password_reset_token: code,
+        password_reset_expires: { [Op.gt]: new Date() },
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Código inválido o expirado" });
+    }
+
+    return res.status(200).json({ message: "Código válido" });
+  } catch (error) {
+    console.error("Error en verifyCode:", error);
+    return res.status(500).json({ message: "Error al verificar el código" });
   }
+},
+
 };

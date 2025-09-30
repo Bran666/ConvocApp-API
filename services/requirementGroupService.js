@@ -64,25 +64,26 @@ const updateRequirementGroup = async (id, data) => {
     return RequirementGroup.findByPk(id);
 };
 
-// Eliminar requirement_group con verificación de relaciones
 const deleteRequirementGroup = async (id) => {
-    // Buscar el grupo incluyendo sus requirements
     const group = await RequirementGroup.findByPk(id, {
         include: [{ model: Requirement, as: 'requirements' }]
     });
 
-    if (!group) return { success: false, message: 'No se encontró requirement_group con ese ID' };
-
-    if (group.requirements && group.requirements.length > 0) {
-        return {
-            success: false,
-            message: 'No se puede eliminar el grupo porque tiene requirements asociados'
-        };
+    if (!group) {
+        return { success: false, message: 'No se encontró requirement_group con ese ID' };
     }
 
+    // 🔥 Eliminar primero todos los requirements asociados
+    if (group.requirements && group.requirements.length > 0) {
+        await Requirement.destroy({ where: { groupId: id } });
+    }
+
+    // 🔥 Luego eliminar el grupo
     await group.destroy();
-    return { success: true, message: 'Requirement_group eliminado correctamente' };
+
+    return { success: true, message: 'Grupo y requirements asociados eliminados correctamente' };
 };
+
 
 
 module.exports = {

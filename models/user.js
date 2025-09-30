@@ -140,38 +140,39 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   // Método estático para login (adaptado a tus campos)
-  User.login = async function (email, password) {
-    const user = await User.findOne({
-      where: {
-        email: email,
-        is_active: true, // Usando tu campo is_active como state
+User.login = async function (email, password) {
+  const user = await User.findOne({
+    where: {
+      email: email,
+      is_active: true,
+    },
+    attributes: { 
+      exclude: [
+        'created_at', 
+        'updated_at',
+        'password_reset_token',
+        'password_reset_expires'
+        // 👇 OJO: NO excluyas "password"
+      ] 
+    },
+    include: [
+      {
+        association: 'role',
+        attributes: { exclude: ['created_at', 'updated_at'] },
       },
-      attributes: { 
-        exclude: [
-          'created_at', 
-          'updated_at',
-          'password_reset_token',
-          'password_reset_expires'
-        ] 
-      },
-      include: [
-        {
-          association: 'role',
-          attributes: { exclude: ['created_at', 'updated_at'] },
-        },
-      ],
-    });
+    ],
+  });
 
-    if (!user) {
-      return { status: 404, message: "Usuario inactivo o no encontrado" };
-    }
+  if (!user) {
+    return { status: 404, message: "Usuario inactivo o no encontrado" };
+  }
 
-    const valid = await user.authenticatePassword(password);
-    
-    return valid
-      ? { status: 200, user }
-      : { status: 401, message: "Usuario y/o contraseña inválidos" };
-  };
+  const valid = await user.authenticatePassword(password);
+  
+  return valid
+    ? { status: 200, user }
+    : { status: 401, message: "Usuario y/o contraseña inválidos" };
+};
 
   // Hook para encriptar contraseña antes de crear
   User.beforeCreate(async (user) => {
@@ -188,17 +189,21 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   // Método estático para actualizar contraseña
-  User.updatePassword = async function (id, password) {
-    const user = await User.findByPk(id);
-    if (!user) {
-      return { status: 404, message: "Usuario no encontrado" };
-    }
-    
-    user.password = await bcrypt.hash(password, 10);
-    await user.save();
-    
-    return user;
-  };
+User.updatePassword = async function (id, password) {
+  const user = await User.findByPk(id);
+  if (!user) {
+    return { status: 404, message: "Usuario no encontrado" };
+  }
+  
+  // ❌ NO hacer hash aquí
+  // user.password = await bcrypt.hash(password, 10);
+
+  // ✅ Solo asigna la nueva contraseña
+  user.password = password;
+  await user.save();
+  
+  return user;
+};
 
   return User;
 };

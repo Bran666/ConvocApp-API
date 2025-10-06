@@ -13,15 +13,15 @@ module.exports = {
         type: Sequelize.STRING
       },
       createdAt: {
-  allowNull: false,
-  type: Sequelize.DATE,
-  defaultValue: Sequelize.fn('NOW')   // 👈 se llena automáticamente
-},
-updatedAt: {
-  allowNull: false,
-  type: Sequelize.DATE,
-  defaultValue: Sequelize.fn('NOW')
-}
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn('NOW')   // 👈 se llena automáticamente
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn('NOW')
+      }
 
     });
   },

@@ -36,8 +36,7 @@ app.use(
 // Rutas públicas (no requieren autenticación)
 app.use("/api/v1/auths", require("./api/v1/routes/auth.routes"));
 
-// Rutas protegidas (requieren autenticación)
-app.use("/api/v1/users", authenticateToken, require("./api/v1/routes/user.routes"));
+app.use("/api/v1/users", require("./api/v1/routes/user.routes"));
 app.use("/api/v1/calls", authenticateToken, require("./api/v1/routes/call.routes"));
 app.use("/api/v1/cities", authenticateToken, require("./api/v1/routes/city.routes"));
 app.use("/api/v1/departments", authenticateToken, require("./api/v1/routes/department.routes"));

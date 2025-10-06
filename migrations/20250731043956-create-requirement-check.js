@@ -21,6 +21,15 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
+      userId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Users', // nombre exacto de la tabla relacionada
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+      },
       requirementId: {
         type: Sequelize.INTEGER,
         references: {

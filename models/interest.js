@@ -20,13 +20,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Interest',
-
     tableName: 'Interests',
-    underscored: true,
-    timestamps: false, // 👈 porque en la tabla no hay created_at ni updated_at
-    tableName: 'Interests',
-    underscored: true,  // Sequelize usará created_at / updated_at
-    timestamps: true    // activa created_at y updated_at
+    timestamps: true // Sequelize manejará createdAt y updatedAt
   });
 
   return Interest;

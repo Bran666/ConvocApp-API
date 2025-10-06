@@ -15,6 +15,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'requirementId',
         as: 'requirement'
       });
+
+      // Relación con User
+      RequirementCheck.belongsTo(models.User, {
+        foreignKey: 'userId',
+        as: 'user'
+      });
     }
   }
 
@@ -35,13 +41,16 @@ module.exports = (sequelize, DataTypes) => {
     requirementId: {
       type: DataTypes.INTEGER,
       field: 'requirementId'
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      field: 'userId'
     }
   }, {
     sequelize,
     modelName: 'RequirementCheck',
     tableName: 'RequirementChecks',
-    underscored: true,
-    timestamps: false // 👈 porque en la tabla no hay createdAt/updatedAt
+    timestamps: true
   });
 
   return RequirementCheck;

@@ -17,12 +17,12 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: true
       },
-      created_at: {   // 👈 en snake_case
+      createdAt: {   // 👈 en snake_case
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')

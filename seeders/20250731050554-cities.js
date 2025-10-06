@@ -2,30 +2,30 @@
 
 module.exports = {
   async up(queryInterface) {
-    await queryInterface.bulkInsert('cities', [
+    await queryInterface.bulkInsert('Cities', [
       {
         name: 'Bogotá',
-        department_id: 1,
-        created_at: new Date(),
-        updated_at: new Date()
+        departmentId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
         name: 'Medellín',
-        department_id: 2,
-        created_at: new Date(),
-        updated_at: new Date()
+        departmentId: 2,
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
         name: 'Cali',
-        department_id: 3,
-        created_at: new Date(),
-        updated_at: new Date()
+        departmentId: 3,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ], {});
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('cities', {
+    await queryInterface.bulkDelete('Cities', {
       name: { [Sequelize.Op.in]: ['Bogotá', 'Medellín', 'Cali'] }
     }, {});
   }

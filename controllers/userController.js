@@ -42,7 +42,7 @@ const getUserById = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const { name, email, password, phone, is_active, role_id } = req.body;
+    const { name, email, password, phone, isActive, roleId } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -56,8 +56,8 @@ const createUser = async (req, res) => {
       email,
       password,
       phone,
-      is_active,
-      role_id
+      isActive,
+      roleId
     );
 
     res.status(201).json({ status: "Ok", data: newUser });
@@ -75,7 +75,7 @@ const createUser = async (req, res) => {
   if (error.name === "SequelizeForeignKeyConstraintError") {
     return res.status(400).json({
       status: "Error",
-      message: "El role_id proporcionado no existe en la tabla roles."
+      message: "El roleId proporcionado no existe en la tabla roles."
     });
   }
 
@@ -99,7 +99,7 @@ const updateUser = async (req, res) => {
       });
     }
 
-    const { name, email, password, phone, is_active, role_id } = req.body;
+    const { name, email, password, phone, isActive, roleId } = req.body;
 
     const updatedUser = await userService.updateUser(
       id,
@@ -107,8 +107,8 @@ const updateUser = async (req, res) => {
       email,
       password,
       phone,
-      is_active,
-      role_id
+      isActive,
+      roleId
     );
 
     if (!updatedUser) {

@@ -6,6 +6,46 @@ const bcrypt = require("bcryptjs");
 const { Op } = require("sequelize");
 
 module.exports = {
+  // Método para verificar código de recuperación
+  verifyCode: async function (req, res) {
+    try {
+      const { token } = req.body;
+      
+      if (!token) {
+        return res.status(400).json({
+          message: "El token es requerido"
+        });
+      }
+      
+      const user = await User.findOne({
+        where: {
+          password_reset_token: token,
+          password_reset_expires: {
+            [Op.gt]: new Date()
+          }
+        }
+      });
+      
+      if (!user) {
+        return res.status(400).json({
+          message: "El token es inválido o ha expirado"
+        });
+      }
+      
+      return res.status(200).json({
+        message: "Token válido",
+        valid: true
+      });
+      
+    } catch (error) {
+      console.error("Error en verifyCode:", error);
+      return res.status(500).json({
+        message: "Error al verificar el código",
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  },
+  
   // Método authenticate adaptado a tus campos
   authenticate: async function (req, res) {
     try {

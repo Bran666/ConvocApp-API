@@ -7,9 +7,9 @@ module.exports = {
       name: 'John Doe',
       email: 'john@example.com',
       password: '123456', // Idealmente, deberías hashear la contraseña si es real.
-      phone: '123456', // Idealmente, deberías hashear la contraseña si es real.
-      is_active: '1', // Idealmente, deberías hashear la contraseña si es real.
-      role_id: '1', // Idealmente, deberías hashear la contraseña si es real.
+      phone: '123456',
+      isActive: true,
+      roleId: 1,
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});

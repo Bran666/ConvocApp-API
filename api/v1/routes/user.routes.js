@@ -1,5 +1,6 @@
 const userController = require("../../../controllers/userController");
 const { Router } = require("express");
+const { authenticateToken } = require("../../../middleware/authMiddleware");
 const router = Router();
 
 router.get("/testUserApi", (req, res) => {
@@ -10,10 +11,11 @@ router.get("/testUserApi", (req, res) => {
 });
 
 //Rutas del usuario con los verbpos http
-router.get('/', userController.getAllUsers);
-router.get('/:id', userController.getUserById);
-router.post('/', userController.createUser);
-router.put('/:id', userController.updateUser);
-router.delete('/:id', userController.deleteUser);
+router.post('/', userController.createUser); // Ruta pública para crear usuarios
+
+router.get('/', authenticateToken, userController.getAllUsers);
+router.get('/:id', authenticateToken, userController.getUserById);
+router.put('/:id', authenticateToken, userController.updateUser);
+router.delete('/:id', authenticateToken, userController.deleteUser);
 
 module.exports = router;

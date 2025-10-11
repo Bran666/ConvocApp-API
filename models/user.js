@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // Asociación con Role
       User.belongsTo(models.Role, {
-        foreignKey: 'role_id',
+        foreignKey: 'roleId',
         as: 'role',
         onUpdate: 'CASCADE',
         onDelete: 'RESTRICT'
@@ -90,11 +90,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true
       },
-      is_active: {
+      isActive: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
       },
-      role_id: {
+      roleId: {
         type: DataTypes.INTEGER,
         allowNull: true
       },
@@ -119,7 +119,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         defaultValue: null
       },
-      password_reset_expires: {
+      passwordResetExpires: {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: null
@@ -161,6 +161,9 @@ module.exports = (sequelize, DataTypes) => {
       ],
     });
 
+    if (!user) {
+      return { status: 404, message: "Usuario inactivo o no encontrado" };
+    }
     if (!user) {
       return { status: 404, message: "Usuario inactivo o no encontrado" };
     }

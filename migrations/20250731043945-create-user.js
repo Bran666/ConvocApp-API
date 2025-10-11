@@ -21,11 +21,11 @@ module.exports = {
       phone: {
         type: Sequelize.STRING
       },
-      is_active: {
+      isActive: {
         type: Sequelize.BOOLEAN,
         defaultValue: true
       },
-      role_id: {
+      roleId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'Roles', // 👈 asegúrate que esta tabla exista antes
@@ -34,33 +34,24 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-
-      // ✅ Nuevo campo para imagen del usuario
-      imgUser: {
-        type: Sequelize.STRING,
-        allowNull: true,
-        defaultValue: null,
-        comment: 'URL de la imagen o avatar del usuario'
-      },
-
       password_reset_token: {
         type: Sequelize.STRING,
         allowNull: true,
         defaultValue: null,
         comment: 'Token para restablecimiento de contraseña'
       },
-      password_reset_expires: {
+      passwordResetExpires: {
         type: Sequelize.DATE,
         allowNull: true,
         defaultValue: null,
         comment: 'Fecha de expiración del token de restablecimiento'
       },
-      created_at: {
+      created_at: {   // 👈 usa snake_case para ser consistente
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')

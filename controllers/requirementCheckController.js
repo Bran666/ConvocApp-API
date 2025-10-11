@@ -1,6 +1,6 @@
 // Enlazamos el servicio (capa) de requirement_checks
 const requirementCheckService = require("../services/requirementCheckService");
-const { Company, Requirement } = require("../models");
+const { Company, Requirement, User } = require("../models");
 
 const getAllRequirementChecks = async (req, res) => {
     try {
@@ -54,10 +54,10 @@ const createRequirementCheck = async (req, res) => {
     try {
         const { isChecked, companyId, requirementId } = req.body;
 
-        if (companyId == null || requirementId == null) {
+        if (companyId == null || requirementId == null || userId == null) {
             return res.status(400).json({
                 status: "Error",
-                message: "Faltan campos obligatorios: companyId, requirementId"
+                message: "Faltan campos obligatorios: companyId, requirementId, userId"
             });
         }
 
@@ -79,10 +79,20 @@ const createRequirementCheck = async (req, res) => {
             });
         }
 
+        // ✅ Validar existencia de User
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(400).json({
+                status: "Error",
+                message: `No existe un User con ID ${userId}`
+            });
+        }
+
         const newCheck = await requirementCheckService.createRequirementCheck({
             isChecked: isChecked ?? false, // por defecto false
             companyId,
-            requirementId
+            requirementId,
+            userId
         });
 
         res.status(201).json({ status: "Ok", data: newCheck });
@@ -101,7 +111,7 @@ const updateRequirementCheck = async (req, res) => {
             });
         }
 
-        const { isChecked, companyId, requirementId } = req.body;
+        const { isChecked, companyId, requirementId, userId } = req.body;
 
         // ✅ Validar existencia de Company (si viene en el body)
         if (companyId != null) {
@@ -125,10 +135,22 @@ const updateRequirementCheck = async (req, res) => {
             }
         }
 
+        // ✅ Validar existencia de User (si viene en el body)
+        if (userId != null) {
+            const user = await User.findByPk(userId);
+            if (!user) {
+                return res.status(400).json({
+                    status: "Error",
+                    message: `No existe un User con ID ${userId}`
+                });
+            }
+        }
+
         const updatedCheck = await requirementCheckService.updateRequirementCheck(id, {
             isChecked,
             companyId,
-            requirementId
+            requirementId,
+            userId
         });
 
         if (!updatedCheck) {

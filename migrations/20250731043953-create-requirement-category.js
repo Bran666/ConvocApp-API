@@ -13,12 +13,12 @@ module.exports = {
         type: Sequelize.STRING(100),
         allowNull: false,
       },
-      created_at: {   // 👈 nombres en snake_case porque tienes underscored: true
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),

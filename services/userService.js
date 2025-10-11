@@ -13,9 +13,6 @@ const getAllUsers = async () => {
 const getUserById = async (id) => {
   try {
     const user = await db.User.findByPk(id);
-    if (!user) {
-      throw new Error("Usuario no encontrado");
-    }
     return user;
   } catch (error) {
     throw new Error("Error al obtener el usuario: " + error.message);
@@ -49,7 +46,7 @@ const updateUser = async (id, name, email, password, phone, is_active, role_id, 
   try {
     const user = await db.User.findByPk(id);
     if (!user) {
-      throw new Error("Usuario no encontrado");
+      return null; // El controlador se encargará del 404
     }
 
     user.name = name;
@@ -74,14 +71,16 @@ const deleteUser = async (id) => {
   try {
     const user = await db.User.findByPk(id);
     if (!user) {
-      throw new Error("Usuario no encontrado");
+      return null; // El controlador se encargará del 404
     }
 
     await user.destroy();
     return { message: "Usuario eliminado correctamente" };
   } catch (error) {
     if (error.name === "SequelizeForeignKeyConstraintError") {
-      throw new Error("No se puede eliminar el usuario porque está asociado a otros registros.");
+      throw new Error(
+        "No se puede eliminar el usuario porque está asociado a otros registros."
+      );
     }
     throw new Error("Error al eliminar el usuario: " + error.message);
   }
@@ -92,5 +91,5 @@ module.exports = {
   getUserById,
   createUser,
   updateUser,
-  deleteUser
+  deleteUser,
 };

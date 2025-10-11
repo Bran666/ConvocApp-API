@@ -1,6 +1,10 @@
+// 📁 controllers/userController.js
 // Enlazamos el servicio (capa) de usuario
 const userService = require("../services/userService");
 
+// ============================================================
+// 🔹 Obtener todos los usuarios
+// ============================================================
 const getAllUsers = async (req, res) => {
   try {
     const allUsers = await userService.getAllUsers();
@@ -16,6 +20,9 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+// ============================================================
+// 🔹 Obtener usuario por ID
+// ============================================================
 const getUserById = async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
@@ -40,9 +47,12 @@ const getUserById = async (req, res) => {
   }
 };
 
+// ============================================================
+// 🔹 Crear usuario (agregado campo imgUser)
+// ============================================================
 const createUser = async (req, res) => {
   try {
-    const { name, email, password, phone, is_active, role_id } = req.body;
+    const { name, email, password, phone, is_active, role_id, imgUser } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -57,38 +67,39 @@ const createUser = async (req, res) => {
       password,
       phone,
       is_active,
-      role_id
+      role_id,
+      imgUser // 📸 nuevo campo
     );
 
     res.status(201).json({ status: "Ok", data: newUser });
-} catch (error) {
-  console.error("Error en createUser:", error); // 👈 queda registrado en consola
+  } catch (error) {
+    console.error("Error en createUser:", error);
 
-  if (error.name === "SequelizeUniqueConstraintError") {
-    const campoDuplicado = error.errors?.[0]?.path;
-    let mensaje = "Ya existe un registro con este valor único.";
-    if (campoDuplicado === "email") mensaje = "Ya existe un usuario con ese email.";
-    if (campoDuplicado === "id") mensaje = "El ID ya está en uso. Verifica la secuencia.";
-    return res.status(400).json({ status: "Error", message: mensaje });
-  }
+    if (error.name === "SequelizeUniqueConstraintError") {
+      const campoDuplicado = error.errors?.[0]?.path;
+      let mensaje = "Ya existe un registro con este valor único.";
+      if (campoDuplicado === "email") mensaje = "Ya existe un usuario con ese email.";
+      if (campoDuplicado === "id") mensaje = "El ID ya está en uso. Verifica la secuencia.";
+      return res.status(400).json({ status: "Error", message: mensaje });
+    }
 
-  if (error.name === "SequelizeForeignKeyConstraintError") {
-    return res.status(400).json({
+    if (error.name === "SequelizeForeignKeyConstraintError") {
+      return res.status(400).json({
+        status: "Error",
+        message: "El role_id proporcionado no existe en la tabla roles."
+      });
+    }
+
+    return res.status(500).json({
       status: "Error",
-      message: "El role_id proporcionado no existe en la tabla roles."
+      message: error.message || "Ocurrió un error inesperado al crear el usuario."
     });
   }
-
-  // Si no fue un error conocido, devolver mensaje más claro
-  return res.status(500).json({
-    status: "Error",
-    message: error.message || "Ocurrió un error inesperado al crear el usuario."
-  });
-}
-
 };
 
-
+// ============================================================
+// 🔹 Actualizar usuario (agregado campo imgUser)
+// ============================================================
 const updateUser = async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
@@ -99,7 +110,7 @@ const updateUser = async (req, res) => {
       });
     }
 
-    const { name, email, password, phone, is_active, role_id } = req.body;
+    const { name, email, password, phone, is_active, role_id, imgUser } = req.body;
 
     const updatedUser = await userService.updateUser(
       id,
@@ -108,7 +119,8 @@ const updateUser = async (req, res) => {
       password,
       phone,
       is_active,
-      role_id
+      role_id,
+      imgUser // 📸 nuevo campo
     );
 
     if (!updatedUser) {
@@ -130,6 +142,9 @@ const updateUser = async (req, res) => {
   }
 };
 
+// ============================================================
+// 🔹 Eliminar usuario
+// ============================================================
 const deleteUser = async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);

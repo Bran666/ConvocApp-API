@@ -5,7 +5,7 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      // Asociación con Role (usando tus nombres de campos)
+      // Asociación con Role
       User.belongsTo(models.Role, {
         foreignKey: 'role_id',
         as: 'role',
@@ -13,31 +13,18 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'RESTRICT'
       });
 
-      // Asociación con Favorites (manteniendo tu configuración)
+      // Asociación con Favorites
       User.hasMany(models.Favorite, {
         foreignKey: 'userId',
         as: 'favorites',
         onDelete: 'CASCADE'
       });
 
-      // Commented out associations to non-existent models
-      /* 
-      // These models don't exist in the project yet
-      User.belongsTo(models.Area, {
-        foreignKey: 'area_id',
-        as: 'area'
-      });
-
-      User.belongsTo(models.Position, {
-        foreignKey: 'position_id',
-        as: 'position'
-      });
-
-      User.belongsTo(models.ContractType, {
-        foreignKey: 'contract_type_id',
-        as: 'contractType'
-      });
-
+      // Otros modelos comentados
+      /*
+      User.belongsTo(models.Area, { foreignKey: 'area_id', as: 'area' });
+      User.belongsTo(models.Position, { foreignKey: 'position_id', as: 'position' });
+      User.belongsTo(models.ContractType, { foreignKey: 'contract_type_id', as: 'contractType' });
       User.belongsToMany(models.Zone, {
         through: 'user_zones',
         foreignKey: 'user_id',
@@ -46,19 +33,21 @@ module.exports = (sequelize, DataTypes) => {
       */
     }
 
-    // Método para autenticar contraseña
+    // ==========================================================
+    // 🔹 Método para autenticar contraseña
+    // ==========================================================
     async authenticatePassword(password) {
       try {
         console.log("Contraseña proporcionada:", password);
         console.log("Contraseña almacenada:", this.password);
         
-        // Comparación directa primero (para contraseñas en texto plano)
+        // Comparación directa (para texto plano)
         if (password === this.password) {
           console.log("Coincidencia exacta de contraseña");
           return true;
         }
         
-        // Intento con bcrypt por si está hasheada
+        // Intento con bcrypt
         try {
           const valid = await bcrypt.compare(password, this.password);
           console.log("Resultado de bcrypt.compare:", valid);
@@ -74,6 +63,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
+  // ==========================================================
+  // 🔹 Inicialización del modelo User
+  // ==========================================================
   User.init(
     {
       id: {
@@ -106,6 +98,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: true
       },
+      // ✅ Campo nuevo para la imagen del usuario
+      imgUser: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+      },
       created_at: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -116,7 +114,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: DataTypes.NOW
       },
-      // Campos para restablecimiento de contraseña
       password_reset_token: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -132,78 +129,78 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: 'User',
       tableName: 'Users',
-      underscored: true,
+      underscored: false,
       timestamps: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at'
     }
   );
 
-  // Método estático para login (adaptado a tus campos)
-User.login = async function (email, password) {
-  const user = await User.findOne({
-    where: {
-      email: email,
-      is_active: true,
-    },
-    attributes: { 
-      exclude: [
-        'created_at', 
-        'updated_at',
-        'password_reset_token',
-        'password_reset_expires'
-        // 👇 OJO: NO excluyas "password"
-      ] 
-    },
-    include: [
-      {
-        association: 'role',
-        attributes: { exclude: ['created_at', 'updated_at'] },
+  // ==========================================================
+  // 🔹 Método estático para login
+  // ==========================================================
+  User.login = async function (email, password) {
+    const user = await User.findOne({
+      where: {
+        email: email,
+        is_active: true,
       },
-    ],
-  });
+      attributes: { 
+        exclude: [
+          'created_at', 
+          'updated_at',
+          'password_reset_token',
+          'password_reset_expires'
+        ] 
+      },
+      include: [
+        {
+          association: 'role',
+          attributes: { exclude: ['created_at', 'updated_at'] },
+        },
+      ],
+    });
 
-  if (!user) {
-    return { status: 404, message: "Usuario inactivo o no encontrado" };
-  }
+    if (!user) {
+      return { status: 404, message: "Usuario inactivo o no encontrado" };
+    }
 
-  const valid = await user.authenticatePassword(password);
-  
-  return valid
-    ? { status: 200, user }
-    : { status: 401, message: "Usuario y/o contraseña inválidos" };
-};
+    const valid = await user.authenticatePassword(password);
+    
+    return valid
+      ? { status: 200, user }
+      : { status: 401, message: "Usuario y/o contraseña inválidos" };
+  };
 
-  // Hook para encriptar contraseña antes de crear
+  // ==========================================================
+  // 🔹 Hooks
+  // ==========================================================
   User.beforeCreate(async (user) => {
     if (user.password) {
       user.password = await bcrypt.hash(user.password, 10);
     }
   });
 
-  // Hook para encriptar contraseña antes de actualizar si cambió
   User.beforeUpdate(async (user) => {
     if (user.changed('password')) {
       user.password = await bcrypt.hash(user.password, 10);
     }
   });
 
-  // Método estático para actualizar contraseña
-User.updatePassword = async function (id, password) {
-  const user = await User.findByPk(id);
-  if (!user) {
-    return { status: 404, message: "Usuario no encontrado" };
-  }
-  
-  // ❌ NO hacer hash aquí
-  // user.password = await bcrypt.hash(password, 10);
+  // ==========================================================
+  // 🔹 Actualizar contraseña (sin hash)
+  // ==========================================================
+  User.updatePassword = async function (id, password) {
+    const user = await User.findByPk(id);
+    if (!user) {
+      return { status: 404, message: "Usuario no encontrado" };
+    }
 
-  // ✅ Solo asigna la nueva contraseña
-  user.password = password;
-  await user.save();
-  
-  return user;
-};
+    user.password = password;
+    await user.save();
+    
+    return user;
+  };
 
   return User;
 };

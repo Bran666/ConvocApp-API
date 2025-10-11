@@ -1,3 +1,4 @@
+// 📁 services/userService.js
 const db = require("../models");
 
 const getAllUsers = async () => {
@@ -21,7 +22,10 @@ const getUserById = async (id) => {
   }
 };
 
-const createUser = async (name, email, password, phone, is_active, role_id) => {
+// ============================================================
+// 🔹 Crear usuario (agregado campo imgUser)
+// ============================================================
+const createUser = async (name, email, password, phone, is_active, role_id, imgUser) => {
   try {
     const newUser = await db.User.create({
       name,
@@ -29,7 +33,8 @@ const createUser = async (name, email, password, phone, is_active, role_id) => {
       password,
       phone,
       is_active,
-      role_id
+      role_id,
+      imgUser // 📸 nuevo campo imagen
     });
     return newUser;
   } catch (error) {
@@ -37,8 +42,10 @@ const createUser = async (name, email, password, phone, is_active, role_id) => {
   }
 };
 
-
-const updateUser = async (id, name, email, password, phone, is_active, role_id) => {
+// ============================================================
+// 🔹 Actualizar usuario (agregado campo imgUser)
+// ============================================================
+const updateUser = async (id, name, email, password, phone, is_active, role_id, imgUser) => {
   try {
     const user = await db.User.findByPk(id);
     if (!user) {
@@ -51,6 +58,7 @@ const updateUser = async (id, name, email, password, phone, is_active, role_id) 
     user.phone = phone;
     user.is_active = is_active;
     user.role_id = role_id;
+    user.imgUser = imgUser; // 📸 actualizar campo imagen
 
     await user.save();
     return user;
@@ -59,6 +67,9 @@ const updateUser = async (id, name, email, password, phone, is_active, role_id) 
   }
 };
 
+// ============================================================
+// 🔹 Eliminar usuario
+// ============================================================
 const deleteUser = async (id) => {
   try {
     const user = await db.User.findByPk(id);

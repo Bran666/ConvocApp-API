@@ -1,6 +1,9 @@
-// 📁 services/userService.js
+
 const db = require("../models");
 
+// ============================================================
+// 🔹 Obtener todos los usuarios
+// ============================================================
 const getAllUsers = async () => {
   try {
     const users = await db.User.findAll();
@@ -10,6 +13,9 @@ const getAllUsers = async () => {
   }
 };
 
+// ============================================================
+// 🔹 Obtener usuario por ID
+// ============================================================
 const getUserById = async (id) => {
   try {
     const user = await db.User.findByPk(id);
@@ -20,42 +26,43 @@ const getUserById = async (id) => {
 };
 
 // ============================================================
-// 🔹 Crear usuario (agregado campo imgUser)
+// 🔹 Crear usuario (incluye campo imgUser)
 // ============================================================
-const createUser = async (name, email, password, phone, is_active, role_id, imgUser) => {
+const createUser = async (name, email, password, phone, isActive, roleId, imgUser) => {
   try {
     const newUser = await db.User.create({
       name,
       email,
       password,
       phone,
-      is_active,
-      role_id,
-      imgUser // 📸 nuevo campo imagen
+      isActive, 
+      roleId,   
+      imgUser  
     });
     return newUser;
   } catch (error) {
-    throw error;
+    throw new Error("Error al crear el usuario: " + error.message);
   }
 };
 
 // ============================================================
-// 🔹 Actualizar usuario (agregado campo imgUser)
+// 🔹 Actualizar usuario (incluye campo imgUser)
 // ============================================================
-const updateUser = async (id, name, email, password, phone, is_active, role_id, imgUser) => {
+const updateUser = async (id, name, email, password, phone, isActive, roleId, imgUser) => {
   try {
     const user = await db.User.findByPk(id);
     if (!user) {
       return null; // El controlador se encargará del 404
     }
 
+    // ✅ Actualización de campos alineada con BD
     user.name = name;
     user.email = email;
     user.password = password;
     user.phone = phone;
-    user.is_active = is_active;
-    user.role_id = role_id;
-    user.imgUser = imgUser; // 📸 actualizar campo imagen
+    user.isActive = isActive;
+    user.roleId = roleId;
+    user.imgUser = imgUser; 
 
     await user.save();
     return user;
@@ -91,5 +98,5 @@ module.exports = {
   getUserById,
   createUser,
   updateUser,
-  deleteUser,
+  deleteUser
 };

@@ -4,36 +4,33 @@ const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
+    // ==========================================================
+    // 🔹 Asociaciones con otras tablas
+    // ==========================================================
     static associate(models) {
-      // Asociación con Role
+      // 🔸 Rol del usuario
       User.belongsTo(models.Role, {
-        foreignKey: 'role_id',
+        foreignKey: 'roleId',
         as: 'role',
         onUpdate: 'CASCADE',
-        onDelete: 'RESTRICT',
+        onDelete: 'SET NULL'
       });
 
-      // Asociación con Favoritos
+      // 🔸 Favoritos del usuario
       User.hasMany(models.Favorite, {
         foreignKey: 'userId',
         as: 'favorites',
-        onDelete: 'CASCADE',
+        onDelete: 'CASCADE'
       });
     }
 
     // ==========================================================
-    // 🔹 Método para autenticar contraseña
+    // 🔹 Verificación de contraseña
     // ==========================================================
     async authenticatePassword(password) {
       try {
-        // Comparación directa (para texto plano)
-        if (password === this.password) {
-          return true;
-        }
-
-        // Intento con bcrypt
-        const valid = await bcrypt.compare(password, this.password);
-        return valid;
+        if (password === this.password) return true;
+        return await bcrypt.compare(password, this.password);
       } catch (error) {
         console.error("Error en authenticatePassword:", error);
         return false;
@@ -42,104 +39,100 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   // ==========================================================
-  // 🔹 Inicialización del modelo User
+  // 🔹 Inicialización del modelo
   // ==========================================================
   User.init(
     {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true,
+        autoIncrement: true
       },
       name: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
       },
       email: {
         type: DataTypes.STRING,
-        unique: true,
         allowNull: false,
+        unique: true
       },
       password: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
       },
       phone: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: true
       },
-      isActive: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: true,
-        field: 'is_active', // ✅ Mapea correctamente con la BD
-      },
-      roleId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        field: 'role_id', // ✅ Mapea correctamente con la BD
-      },
+      // 🖼️ Imagen del usuario
       imgUser: {
         type: DataTypes.STRING,
         allowNull: true,
         defaultValue: null,
-        
+        comment: 'URL o ruta de la imagen de perfil del usuario'
+      },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+      },
+      roleId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'Roles',
+          key: 'id'
+        }
       },
       password_reset_token: {
         type: DataTypes.STRING,
         allowNull: true,
-        defaultValue: null,
+        defaultValue: null
       },
       passwordResetExpires: {
         type: DataTypes.DATE,
         allowNull: true,
-        defaultValue: null,
-        field: 'password_reset_expires', // ✅ Corrige nombre real en BD
+        defaultValue: null
       },
-      created_at: {
+      createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW,
+        defaultValue: DataTypes.NOW
       },
-      updated_at: {
+      updatedAt: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW,
-      },
+        defaultValue: DataTypes.NOW
+      }
     },
     {
       sequelize,
       modelName: 'User',
       tableName: 'Users',
-      underscored: false,
-      timestamps: true,
-      createdAt: 'created_at',
-      updatedAt: 'updated_at',
+      timestamps: true, // ✅ Sequelize creará automáticamente createdAt y updatedAt
     }
   );
 
   // ==========================================================
-  // 🔹 Método estático para login
+  // 🔹 Método estático de login
   // ==========================================================
   User.login = async function (email, password) {
     const user = await User.findOne({
-      where: {
-        email,
-        is_active: true, // ✅ coincide con la BD gracias a `field`
-      },
+      where: { email, isActive: true },
       attributes: {
         exclude: [
-          'created_at',
-          'updated_at',
           'password_reset_token',
-          'password_reset_expires',
-        ],
+          'passwordResetExpires',
+          'createdAt',
+          'updatedAt'
+        ]
       },
       include: [
         {
           association: 'role',
-          attributes: { exclude: ['created_at', 'updated_at'] },
-        },
-      ],
+          attributes: { exclude: ['createdAt', 'updatedAt'] }
+        }
+      ]
     });
 
     if (!user) {
@@ -153,7 +146,7 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   // ==========================================================
-  // 🔹 Hooks
+  // 🔹 Hooks — Hash automático de contraseñas
   // ==========================================================
   User.beforeCreate(async (user) => {
     if (user.password) {
@@ -168,17 +161,14 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   // ==========================================================
-  // 🔹 Actualizar contraseña (con hash)
+  // 🔹 Actualización manual de contraseña
   // ==========================================================
   User.updatePassword = async function (id, newPassword) {
     const user = await User.findByPk(id);
-    if (!user) {
-      return { status: 404, message: "Usuario no encontrado" };
-    }
+    if (!user) return { status: 404, message: "Usuario no encontrado" };
 
     user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
-
     return user;
   };
 

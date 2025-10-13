@@ -51,55 +51,63 @@ const getRequirementCheckById = async (req, res) => {
 };
 
 const createRequirementCheck = async (req, res) => {
-    try {
-        const { isChecked, companyId, requirementId } = req.body;
+  try {
+    const { isChecked, companyId, requirementId, userId } = req.body;
 
-        if (companyId == null || requirementId == null || userId == null) {
-            return res.status(400).json({
-                status: "Error",
-                message: "Faltan campos obligatorios: companyId, requirementId, userId"
-            });
-        }
-
-        // ✅ Validar existencia de Company
-        const company = await Company.findByPk(companyId);
-        if (!company) {
-            return res.status(400).json({
-                status: "Error",
-                message: `No existe una Company con ID ${companyId}`
-            });
-        }
-
-        // ✅ Validar existencia de Requirement
-        const requirement = await Requirement.findByPk(requirementId);
-        if (!requirement) {
-            return res.status(400).json({
-                status: "Error",
-                message: `No existe un Requirement con ID ${requirementId}`
-            });
-        }
-
-        // ✅ Validar existencia de User
-        const user = await User.findByPk(userId);
-        if (!user) {
-            return res.status(400).json({
-                status: "Error",
-                message: `No existe un User con ID ${userId}`
-            });
-        }
-
-        const newCheck = await requirementCheckService.createRequirementCheck({
-            isChecked: isChecked ?? false, // por defecto false
-            companyId,
-            requirementId,
-            userId
-        });
-
-        res.status(201).json({ status: "Ok", data: newCheck });
-    } catch (error) {
-        res.status(500).json({ status: "Error", message: error.message });
+    // ✅ Validación flexible: debe tener requirementId y al menos un ID de entidad
+    if (!requirementId || (!companyId && !userId)) {
+      return res.status(400).json({
+        status: "Error",
+        message: "Faltan campos obligatorios: requirementId y (companyId o userId)"
+      });
     }
+
+    // ✅ Validar Requirement
+    const requirement = await Requirement.findByPk(requirementId);
+    if (!requirement) {
+      return res.status(400).json({
+        status: "Error",
+        message: `No existe un Requirement con ID ${requirementId}`
+      });
+    }
+
+    // ✅ Validar Company (si aplica)
+    if (companyId) {
+      const company = await Company.findByPk(companyId);
+      if (!company) {
+        return res.status(400).json({
+          status: "Error",
+          message: `No existe una Company con ID ${companyId}`
+        });
+      }
+    }
+
+    // ✅ Validar User (si aplica)
+    if (userId) {
+      const user = await User.findByPk(userId);
+      if (!user) {
+        return res.status(400).json({
+          status: "Error",
+          message: `No existe un User con ID ${userId}`
+        });
+      }
+    }
+
+    // ✅ Crear registro
+    const newCheck = await requirementCheckService.createRequirementCheck({
+      isChecked: isChecked ?? false,
+      companyId,
+      requirementId,
+      userId
+    });
+
+    return res.status(201).json({ status: "Ok", data: newCheck });
+  } catch (error) {
+    console.error("❌ Error en createRequirementCheck:", error);
+    return res.status(500).json({ status: "Error", message: error.message });
+  }
 };
+
 
 const updateRequirementCheck = async (req, res) => {
     try {

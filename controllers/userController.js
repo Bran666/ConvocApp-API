@@ -1,5 +1,4 @@
-// 📁 controllers/userController.js
-// Enlazamos el servicio (capa) de usuario
+
 const userService = require("../services/userService");
 
 // ============================================================
@@ -48,11 +47,19 @@ const getUserById = async (req, res) => {
 };
 
 // ============================================================
-// 🔹 Crear usuario (agregado campo imgUser)
+// 🔹 Crear usuario (incluye campo imgUser)
 // ============================================================
 const createUser = async (req, res) => {
   try {
-    const { name, email, password, phone, is_active, role_id, imgUser } = req.body;
+    const {
+      name,
+      email,
+      password,
+      phone,
+      isActive,  // 🟢 igual que en la migración
+      roleId,    // 🟢 igual que en la migración
+      imgUser    // 🖼️ campo nuevo
+    } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -66,9 +73,9 @@ const createUser = async (req, res) => {
       email,
       password,
       phone,
-      is_active,
-      role_id,
-      imgUser // 📸 nuevo campo
+      isActive,
+      roleId,
+      imgUser
     );
 
     res.status(201).json({ status: "Ok", data: newUser });
@@ -86,7 +93,7 @@ const createUser = async (req, res) => {
     if (error.name === "SequelizeForeignKeyConstraintError") {
       return res.status(400).json({
         status: "Error",
-        message: "El role_id proporcionado no existe en la tabla roles."
+        message: "El roleId proporcionado no existe en la tabla Roles."
       });
     }
 
@@ -98,7 +105,7 @@ const createUser = async (req, res) => {
 };
 
 // ============================================================
-// 🔹 Actualizar usuario (agregado campo imgUser)
+// 🔹 Actualizar usuario (incluye campo imgUser)
 // ============================================================
 const updateUser = async (req, res) => {
   try {
@@ -110,7 +117,15 @@ const updateUser = async (req, res) => {
       });
     }
 
-    const { name, email, password, phone, is_active, role_id, imgUser } = req.body;
+    const {
+      name,
+      email,
+      password,
+      phone,
+      isActive,
+      roleId,
+      imgUser
+    } = req.body;
 
     const updatedUser = await userService.updateUser(
       id,
@@ -118,9 +133,9 @@ const updateUser = async (req, res) => {
       email,
       password,
       phone,
-      is_active,
-      role_id,
-      imgUser // 📸 nuevo campo
+      isActive,
+      roleId,
+      imgUser
     );
 
     if (!updatedUser) {

@@ -21,6 +21,12 @@ module.exports = {
       phone: {
         type: Sequelize.STRING
       },
+       imgUser: {
+        type: Sequelize.STRING,
+        allowNull: true,
+        defaultValue: null,
+       
+      },
       isActive: {
         type: Sequelize.BOOLEAN,
         defaultValue: true
@@ -46,7 +52,7 @@ module.exports = {
         defaultValue: null,
         comment: 'Fecha de expiración del token de restablecimiento'
       },
-      created_at: {   // 👈 usa snake_case para ser consistente
+      createdAt: {   // 👈 usa snake_case para ser consistente
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')

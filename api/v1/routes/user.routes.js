@@ -13,9 +13,9 @@ router.get("/testUserApi", (req, res) => {
 //Rutas del usuario con los verbpos http
 router.post('/', userController.createUser); // Ruta pública para crear usuarios
 
-router.get('/', authenticateToken, userController.getAllUsers);
-router.get('/:id', authenticateToken, userController.getUserById);
-router.put('/:id', authenticateToken, userController.updateUser);
-router.delete('/:id', authenticateToken, userController.deleteUser);
+router.get('/',  userController.getAllUsers);
+router.get('/:id',  userController.getUserById);
+router.put('/:id',  userController.updateUser);
+router.delete('/:id',  userController.deleteUser);
 
 module.exports = router;

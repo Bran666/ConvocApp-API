@@ -4,7 +4,7 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Interest extends Model {
     static associate(models) {
-      // Por ahora, sin relaciones directas
+      // Puedes agregar asociaciones aquí si las necesitas
     }
   }
 
@@ -21,7 +21,9 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Interest',
     tableName: 'Interests',
-    timestamps: true // Sequelize manejará createdAt y updatedAt
+    timestamps: true,         // ✅ Sigue usando timestamps
+    createdAt: 'created_at',  // ✅ Usa los nombres reales de la BD
+    updatedAt: 'updated_at'
   });
 
   return Interest;

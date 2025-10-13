@@ -66,15 +66,17 @@ module.exports = {
         );
 
         return res.status(200).json({
-          token,
-          user: {
-            uId: data.user.id,
-            name: data.user.name, // Usamos name en lugar de username
-            roleId: data.user.role_id, // ✅ CORREGIDO
-            role: data.user.role ? data.user.role.name : null,
-            imgUser: data.user.imgUser || null, // ✅ corregido
-          },
-        });
+  token,
+  user: {
+    uId: data.user.id,
+    name: data.user.name,
+    email: data.user.email, // 👈 AGREGA ESTA LÍNEA
+    roleId: data.user.role_id,
+    role: data.user.role ? data.user.role.name : null,
+    imgUser: data.user.imgUser || null,
+  },
+});
+
       }
 
       // Si no es status 200, retornar el error del modelo
@@ -122,11 +124,12 @@ module.exports = {
           ],
         });
 
-        if (!user || !user.is_active) {
-          return res.status(401).json({
-            message: "Usuario no encontrado o inactivo",
-          });
-        }
+       if (!user || !user.isActive) {
+  return res.status(401).json({
+    message: "Usuario no encontrado o inactivo",
+  });
+}
+
 
         return res.status(200).json({
           user: {
@@ -161,45 +164,42 @@ module.exports = {
   },
 
   // Método forgotPassword adaptado a tus campos
-  // Método forgotPassword adaptado para enviar código
-  forgotPassword: async function (req, res) {
-    try {
-      const { email } = req.body;
+ // Método forgotPassword adaptado para enviar código
+forgotPassword: async function (req, res) {
+  try {
+    const { email } = req.body;
 
-      if (!email) {
-        return res
-          .status(400)
-          .json({ message: "El correo electrónico es requerido" });
-      }
+    if (!email) {
+      return res.status(400).json({ message: "El correo electrónico es requerido" });
+    }
 
-      const user = await User.findOne({
-        where: { email: email, is_active: true },
-      });
+    const user = await User.findOne({
+      where: { email: email, is_active: true },
+    });
 
-      // Mensaje genérico
-      const successMessage =
-        "Si el email existe, recibirás un código de recuperación";
+    // Mensaje genérico
+    const successMessage = "Si el email existe, recibirás un código de recuperación";
 
-      if (!user) {
-        return res.status(200).json({ message: successMessage });
-      }
+    if (!user) {
+      return res.status(200).json({ message: successMessage });
+    }
 
-      // 🔹 Generar código de 6 dígitos
-      const code = Math.floor(100000 + Math.random() * 900000).toString();
+    // 🔹 Generar código de 6 dígitos
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-      // Expira en 10 minutos
-      const expires = Date.now() + 1000 * 60 * 10;
+    // Expira en 10 minutos
+    const expires = Date.now() + 1000 * 60 * 10;
 
-      await user.update({
-        password_reset_token: code, // Guardamos el código
-        password_reset_expires: new Date(expires),
-      });
+    await user.update({
+      password_reset_token: code, // Guardamos el código
+      password_reset_expires: new Date(expires),
+    });
 
-      // 🔹 Enviar correo con el código
-      await sendEmail({
-        to: user.email,
-        subject: "Código de recuperación - Cronode CPIC",
-        html: `
+    // 🔹 Enviar correo con el código
+    await sendEmail({
+      to: user.email,
+      subject: "Código de recuperación - Cronode CPIC",
+      html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
           <h2 style="color: #008550;">Cronode CPIC</h2>
           <p>Hola <strong>${user.name}</strong>,</p>
@@ -210,60 +210,54 @@ module.exports = {
           <p>Este código expirará en <strong>10 minutos</strong>.</p>
         </div>
       `,
-      });
+    });
 
-      return res.status(200).json({ message: successMessage });
-    } catch (error) {
-      console.error("Error en forgotPassword:", error);
-      return res.status(500).json({
-        message: "Error al procesar la solicitud de recuperación de contraseña",
-      });
+    return res.status(200).json({ message: successMessage });
+  } catch (error) {
+    console.error("Error en forgotPassword:", error);
+    return res.status(500).json({
+      message: "Error al procesar la solicitud de recuperación de contraseña",
+    });
+  }
+},
+
+
+ resetPassword: async function (req, res) {
+  try {
+    const { email, code, newPassword } = req.body;
+
+    if (!email || !code || !newPassword) {
+      return res.status(400).json({ message: "Correo, código y nueva contraseña son requeridos" });
     }
-  },
 
-  resetPassword: async function (req, res) {
-    try {
-      const { email, code, newPassword } = req.body;
+    const user = await User.findOne({
+      where: {
+        email,
+        is_active: true,
+        password_reset_token: code,
+        password_reset_expires: { [Op.gt]: new Date() },
+      },
+    });
 
-      if (!email || !code || !newPassword) {
-        return res
-          .status(400)
-          .json({
-            message: "Correo, código y nueva contraseña son requeridos",
-          });
-      }
-
-      const user = await User.findOne({
-        where: {
-          email,
-          is_active: true,
-          password_reset_token: code,
-          password_reset_expires: { [Op.gt]: new Date() },
-        },
-      });
-
-      if (!user) {
-        return res.status(400).json({ message: "Código inválido o expirado" });
-      }
-
-      await User.updatePassword(user.id, newPassword);
-
-      // limpiar código
-      await user.update({
-        password_reset_token: null,
-        password_reset_expires: null,
-      });
-
-      return res
-        .status(200)
-        .json({ message: "Contraseña actualizada con éxito" });
-    } catch (error) {
-      console.error("Error en resetPassword:", error);
-      return res
-        .status(500)
-        .json({ message: "Error al cambiar la contraseña" });
+    if (!user) {
+      return res.status(400).json({ message: "Código inválido o expirado" });
     }
-  },
+
+    await User.updatePassword(user.id, newPassword);
+
+    // limpiar código
+    await user.update({
+      password_reset_token: null,
+      password_reset_expires: null,
+    });
+
+    return res.status(200).json({ message: "Contraseña actualizada con éxito" });
+  } catch (error) {
+    console.error("Error en resetPassword:", error);
+    return res.status(500).json({ message: "Error al cambiar la contraseña" });
+  }
+},
+
 
   // Método adicional para cambiar contraseña (cuando el usuario está autenticado)
   changePassword: async function (req, res) {
@@ -364,32 +358,31 @@ module.exports = {
     }
   },
   verifyCode: async function (req, res) {
-    try {
-      const { email, code } = req.body;
+  try {
+    const { email, code } = req.body;
 
-      if (!email || !code) {
-        return res
-          .status(400)
-          .json({ message: "Correo y código son requeridos" });
-      }
-
-      const user = await User.findOne({
-        where: {
-          email,
-          is_active: true,
-          password_reset_token: code,
-          password_reset_expires: { [Op.gt]: new Date() },
-        },
-      });
-
-      if (!user) {
-        return res.status(400).json({ message: "Código inválido o expirado" });
-      }
-
-      return res.status(200).json({ message: "Código válido" });
-    } catch (error) {
-      console.error("Error en verifyCode:", error);
-      return res.status(500).json({ message: "Error al verificar el código" });
+    if (!email || !code) {
+      return res.status(400).json({ message: "Correo y código son requeridos" });
     }
-  },
+
+    const user = await User.findOne({
+      where: {
+        email,
+        is_active: true,
+        password_reset_token: code,
+        password_reset_expires: { [Op.gt]: new Date() },
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Código inválido o expirado" });
+    }
+
+    return res.status(200).json({ message: "Código válido" });
+  } catch (error) {
+    console.error("Error en verifyCode:", error);
+    return res.status(500).json({ message: "Error al verificar el código" });
+  }
+},
+
 };

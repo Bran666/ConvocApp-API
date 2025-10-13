@@ -10,11 +10,17 @@ router.get("/testFavoriteApi", (req, res) => {
   });
 });
 
-// Rutas de favorites con los verbos HTTP
-router.get('/', favoriteController.getAllFavorites);
-router.get('/:id', favoriteController.getFavoriteById);
-router.post('/', favoriteController.createFavorite);
-router.put('/:id', favoriteController.updateFavorite);
-router.delete('/:id', favoriteController.deleteFavorite);
+// ✅ Ruta para obtener favoritos por usuario
+router.get("/user/:userId", favoriteController.getFavoritesByUser);
+
+// Otras rutas existentes
+router.get("/", favoriteController.getAllFavorites);
+router.get("/:id", favoriteController.getFavoriteById);
+router.post("/", favoriteController.createFavorite);
+router.put("/:id", favoriteController.updateFavorite);
+router.delete("/:id", favoriteController.deleteFavorite);
+
+module.exports = router;
+
 
 module.exports = router;

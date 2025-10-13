@@ -39,6 +39,44 @@ const getFavoriteById = async (req, res) => {
     }
 };
 
+// ============================================================
+// 🔹 Obtener favoritos por usuario
+// ============================================================
+const getFavoritesByUser = async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId, 10);
+    if (isNaN(userId)) {
+      return res.status(400).json({
+        status: "Error",
+        message: "El userId debe ser un número válido",
+      });
+    }
+
+    const userFavorites = await favoriteService.getFavoritesByUser(userId, {
+      includeUser: true,
+      includeCall: true,
+    });
+
+    if (!userFavorites || userFavorites.length === 0) {
+      return res.status(404).json({
+        status: "Error",
+        message: `No se encontraron favoritos para el usuario con ID ${userId}`,
+      });
+    }
+
+    res.status(200).json({
+      status: "Ok",
+      data: userFavorites,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "Error",
+      message: error.message,
+    });
+  }
+};
+
+
 const createFavorite = async (req, res) => {
     try {
         const { userId, callId } = req.body;
@@ -108,6 +146,7 @@ const deleteFavorite = async (req, res) => {
 
 module.exports = {
     getAllFavorites,
+     getFavoritesByUser, // ✅ nuevo
     getFavoriteById,
     createFavorite,
     updateFavorite,

@@ -7,30 +7,18 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // Asociación con Role
       User.belongsTo(models.Role, {
-        foreignKey: 'roleId',
+        foreignKey: 'role_id',
         as: 'role',
         onUpdate: 'CASCADE',
-        onDelete: 'RESTRICT'
+        onDelete: 'RESTRICT',
       });
 
-      // Asociación con Favorites
+      // Asociación con Favoritos
       User.hasMany(models.Favorite, {
         foreignKey: 'userId',
         as: 'favorites',
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
       });
-
-      // Otros modelos comentados
-      /*
-      User.belongsTo(models.Area, { foreignKey: 'area_id', as: 'area' });
-      User.belongsTo(models.Position, { foreignKey: 'position_id', as: 'position' });
-      User.belongsTo(models.ContractType, { foreignKey: 'contract_type_id', as: 'contractType' });
-      User.belongsToMany(models.Zone, {
-        through: 'user_zones',
-        foreignKey: 'user_id',
-        as: 'zones'
-      });
-      */
     }
 
     // ==========================================================
@@ -38,26 +26,16 @@ module.exports = (sequelize, DataTypes) => {
     // ==========================================================
     async authenticatePassword(password) {
       try {
-        console.log("Contraseña proporcionada:", password);
-        console.log("Contraseña almacenada:", this.password);
-        
         // Comparación directa (para texto plano)
         if (password === this.password) {
-          console.log("Coincidencia exacta de contraseña");
           return true;
         }
-        
+
         // Intento con bcrypt
-        try {
-          const valid = await bcrypt.compare(password, this.password);
-          console.log("Resultado de bcrypt.compare:", valid);
-          return valid;
-        } catch (bcryptError) {
-          console.log("Error en bcrypt.compare:", bcryptError.message);
-          return false;
-        }
+        const valid = await bcrypt.compare(password, this.password);
+        return valid;
       } catch (error) {
-        console.error("Error general en authenticatePassword:", error);
+        console.error("Error en authenticatePassword:", error);
         return false;
       }
     }
@@ -71,59 +49,62 @@ module.exports = (sequelize, DataTypes) => {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
       },
       name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       email: {
         type: DataTypes.STRING,
         unique: true,
-        allowNull: false
+        allowNull: false,
       },
       password: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       phone: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       isActive: {
         type: DataTypes.BOOLEAN,
-        defaultValue: true
+        defaultValue: true,
+        field: 'is_active', // ✅ Mapea correctamente con la BD
       },
       roleId: {
         type: DataTypes.INTEGER,
-        allowNull: true
+        allowNull: true,
+        field: 'role_id', // ✅ Mapea correctamente con la BD
       },
-      // ✅ Campo nuevo para la imagen del usuario
       imgUser: {
         type: DataTypes.STRING,
         allowNull: true,
-        defaultValue: null
-      },
-      created_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-      },
-      updated_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
+        defaultValue: null,
+        
       },
       password_reset_token: {
         type: DataTypes.STRING,
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
       },
       passwordResetExpires: {
         type: DataTypes.DATE,
         allowNull: true,
-        defaultValue: null
-      }
+        defaultValue: null,
+        field: 'password_reset_expires', // ✅ Corrige nombre real en BD
+      },
+      created_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
+      updated_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
     },
     {
       sequelize,
@@ -132,7 +113,7 @@ module.exports = (sequelize, DataTypes) => {
       underscored: false,
       timestamps: true,
       createdAt: 'created_at',
-      updatedAt: 'updated_at'
+      updatedAt: 'updated_at',
     }
   );
 
@@ -142,16 +123,16 @@ module.exports = (sequelize, DataTypes) => {
   User.login = async function (email, password) {
     const user = await User.findOne({
       where: {
-        email: email,
-        is_active: true,
+        email,
+        is_active: true, // ✅ coincide con la BD gracias a `field`
       },
-      attributes: { 
+      attributes: {
         exclude: [
-          'created_at', 
+          'created_at',
           'updated_at',
           'password_reset_token',
-          'password_reset_expires'
-        ] 
+          'password_reset_expires',
+        ],
       },
       include: [
         {
@@ -164,12 +145,8 @@ module.exports = (sequelize, DataTypes) => {
     if (!user) {
       return { status: 404, message: "Usuario inactivo o no encontrado" };
     }
-    if (!user) {
-      return { status: 404, message: "Usuario inactivo o no encontrado" };
-    }
 
     const valid = await user.authenticatePassword(password);
-    
     return valid
       ? { status: 200, user }
       : { status: 401, message: "Usuario y/o contraseña inválidos" };
@@ -191,17 +168,17 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   // ==========================================================
-  // 🔹 Actualizar contraseña (sin hash)
+  // 🔹 Actualizar contraseña (con hash)
   // ==========================================================
-  User.updatePassword = async function (id, password) {
+  User.updatePassword = async function (id, newPassword) {
     const user = await User.findByPk(id);
     if (!user) {
       return { status: 404, message: "Usuario no encontrado" };
     }
 
-    user.password = password;
+    user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
-    
+
     return user;
   };
 

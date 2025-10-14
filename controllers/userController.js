@@ -1,5 +1,6 @@
-
 const userService = require("../services/userService");
+const { User } = require("../models"); // ✅ Importamos el modelo directamente para verificar el correo
+const bcrypt = require("bcryptjs");
 
 // ============================================================
 // 🔹 Obtener todos los usuarios
@@ -10,7 +11,7 @@ const getAllUsers = async (req, res) => {
     if (!allUsers || allUsers.length === 0) {
       return res.status(404).json({
         status: "Error",
-        message: "No se encontraron usuarios"
+        message: "No se encontraron usuarios",
       });
     }
     res.status(200).json({ status: "Ok", data: allUsers });
@@ -28,7 +29,7 @@ const getUserById = async (req, res) => {
     if (isNaN(id)) {
       return res.status(400).json({
         status: "Error",
-        message: "El ID debe ser un número válido"
+        message: "El ID debe ser un número válido",
       });
     }
 
@@ -36,7 +37,7 @@ const getUserById = async (req, res) => {
     if (!oneUser) {
       return res.status(404).json({
         status: "Error",
-        message: `No se encontró el usuario con ID ${id}`
+        message: `No se encontró el usuario con ID ${id}`,
       });
     }
 
@@ -47,7 +48,7 @@ const getUserById = async (req, res) => {
 };
 
 // ============================================================
-// 🔹 Crear usuario (incluye campo imgUser)
+// 🔹 Crear usuario (con validación de email único)
 // ============================================================
 const createUser = async (req, res) => {
   try {
@@ -56,22 +57,36 @@ const createUser = async (req, res) => {
       email,
       password,
       phone,
-      isActive,  // 🟢 igual que en la migración
-      roleId,    // 🟢 igual que en la migración
-      imgUser    // 🖼️ campo nuevo
+      isActive,
+      roleId,
+      imgUser,
     } = req.body;
 
+    // ✅ Validar campos obligatorios
     if (!name || !email || !password) {
       return res.status(400).json({
         status: "Error",
-        message: "Faltan campos obligatorios: name, email, password"
+        message: "Faltan campos obligatorios: name, email, password",
       });
     }
 
+    // ✅ Validar si el correo ya existe en la base de datos
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({
+        status: "Error",
+        message: "El correo ya está registrado. Intenta iniciar sesión o usa otro correo.",
+      });
+    }
+
+    // ✅ Hashear la contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // ✅ Crear el usuario
     const newUser = await userService.createUser(
       name,
       email,
-      password,
+      hashedPassword,
       phone,
       isActive,
       roleId,
@@ -85,21 +100,25 @@ const createUser = async (req, res) => {
     if (error.name === "SequelizeUniqueConstraintError") {
       const campoDuplicado = error.errors?.[0]?.path;
       let mensaje = "Ya existe un registro con este valor único.";
-      if (campoDuplicado === "email") mensaje = "Ya existe un usuario con ese email.";
-      if (campoDuplicado === "id") mensaje = "El ID ya está en uso. Verifica la secuencia.";
+      if (campoDuplicado === "email")
+        mensaje = "Ya existe un usuario con ese email.";
+      if (campoDuplicado === "id")
+        mensaje = "El ID ya está en uso. Verifica la secuencia.";
       return res.status(400).json({ status: "Error", message: mensaje });
     }
 
     if (error.name === "SequelizeForeignKeyConstraintError") {
       return res.status(400).json({
         status: "Error",
-        message: "El roleId proporcionado no existe en la tabla Roles."
+        message: "El roleId proporcionado no existe en la tabla Roles.",
       });
     }
 
     return res.status(500).json({
       status: "Error",
-      message: error.message || "Ocurrió un error inesperado al crear el usuario."
+      message:
+        error.message ||
+        "Ocurrió un error inesperado al crear el usuario.",
     });
   }
 };
@@ -113,7 +132,7 @@ const updateUser = async (req, res) => {
     if (isNaN(id)) {
       return res.status(400).json({
         status: "Error",
-        message: "El ID debe ser un número válido"
+        message: "El ID debe ser un número válido",
       });
     }
 
@@ -124,8 +143,19 @@ const updateUser = async (req, res) => {
       phone,
       isActive,
       roleId,
-      imgUser
+      imgUser,
     } = req.body;
+
+    // ✅ Evitar duplicar email al actualizar
+    if (email) {
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser && existingUser.id !== id) {
+        return res.status(400).json({
+          status: "Error",
+          message: "Ya existe un usuario con ese correo electrónico.",
+        });
+      }
+    }
 
     const updatedUser = await userService.updateUser(
       id,
@@ -141,7 +171,7 @@ const updateUser = async (req, res) => {
     if (!updatedUser) {
       return res.status(404).json({
         status: "Error",
-        message: `No se encontró el usuario con ID ${id}`
+        message: `No se encontró el usuario con ID ${id}`,
       });
     }
 
@@ -150,7 +180,7 @@ const updateUser = async (req, res) => {
     if (error.name === "SequelizeUniqueConstraintError") {
       return res.status(400).json({
         status: "Error",
-        message: "Ya existe un usuario con ese email"
+        message: "Ya existe un usuario con ese email",
       });
     }
     res.status(500).json({ status: "Error", message: error.message });
@@ -166,7 +196,7 @@ const deleteUser = async (req, res) => {
     if (isNaN(id)) {
       return res.status(400).json({
         status: "Error",
-        message: "El ID debe ser un número válido"
+        message: "El ID debe ser un número válido",
       });
     }
 
@@ -174,20 +204,20 @@ const deleteUser = async (req, res) => {
     if (!deletedUser) {
       return res.status(404).json({
         status: "Error",
-        message: `No se encontró el usuario con ID ${id}`
+        message: `No se encontró el usuario con ID ${id}`,
       });
     }
 
     res.status(200).json({
       status: "Ok",
-      message: "Usuario eliminado correctamente"
+      message: "Usuario eliminado correctamente",
     });
   } catch (error) {
     if (error.name === "SequelizeForeignKeyConstraintError") {
       return res.status(400).json({
         status: "Error",
         message:
-          "No se puede eliminar el usuario porque tiene registros asociados (ej: favoritos, convocatorias)"
+          "No se puede eliminar el usuario porque tiene registros asociados (ej: favoritos, convocatorias)",
       });
     }
     res.status(500).json({ status: "Error", message: error.message });
@@ -199,5 +229,5 @@ module.exports = {
   getUserById,
   createUser,
   updateUser,
-  deleteUser
+  deleteUser,
 };

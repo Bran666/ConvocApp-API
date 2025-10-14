@@ -48,6 +48,9 @@ const createUser = async (name, email, password, phone, isActive, roleId, imgUse
 // ============================================================
 // 🔹 Actualizar usuario (incluye campo imgUser)
 // ============================================================
+// ============================================================
+// 🔹 Actualizar usuario (con validaciones seguras)
+// ============================================================
 const updateUser = async (id, name, email, password, phone, isActive, roleId, imgUser) => {
   try {
     const user = await db.User.findByPk(id);
@@ -55,14 +58,22 @@ const updateUser = async (id, name, email, password, phone, isActive, roleId, im
       return null; // El controlador se encargará del 404
     }
 
-    // ✅ Actualización de campos alineada con BD
-    user.name = name;
-    user.email = email;
-    user.password = password;
-    user.phone = phone;
-    user.isActive = isActive;
-    user.roleId = roleId;
-    user.imgUser = imgUser; 
+    // ✅ Solo actualizamos los campos si vienen en el body
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (phone) user.phone = phone;
+    if (typeof isActive === "boolean") user.isActive = isActive;
+    if (imgUser) user.imgUser = imgUser;
+
+    // 🔐 Solo si el usuario envió una nueva contraseña
+    if (password && password.trim() !== "") {
+      user.password = password;
+    }
+
+    // 👇 Solo si el rol fue proporcionado (evita null)
+    if (roleId !== undefined && roleId !== null) {
+      user.roleId = roleId;
+    }
 
     await user.save();
     return user;
@@ -70,6 +81,7 @@ const updateUser = async (id, name, email, password, phone, isActive, roleId, im
     throw new Error("Error al actualizar el usuario: " + error.message);
   }
 };
+
 
 // ============================================================
 // 🔹 Eliminar usuario

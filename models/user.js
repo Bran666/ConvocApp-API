@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 const bcrypt = require("bcryptjs");
-const { Model } = require('sequelize');
+const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -10,17 +10,17 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // 🔸 Rol del usuario
       User.belongsTo(models.Role, {
-        foreignKey: 'roleId',
-        as: 'role',
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+        foreignKey: "roleId",
+        as: "role",
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
       });
 
       // 🔸 Favoritos del usuario
       User.hasMany(models.Favorite, {
-        foreignKey: 'userId',
-        as: 'favorites',
-        onDelete: 'CASCADE'
+        foreignKey: "userId",
+        as: "favorites",
+        onDelete: "CASCADE",
       });
     }
 
@@ -46,69 +46,72 @@ module.exports = (sequelize, DataTypes) => {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
       },
       name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
       },
       password: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       phone: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       // 🖼️ Imagen del usuario
       imgUser: {
         type: DataTypes.STRING,
         allowNull: true,
         defaultValue: null,
-        comment: 'URL o ruta de la imagen de perfil del usuario'
+        comment: "URL o ruta de la imagen de perfil del usuario",
       },
       isActive: {
         type: DataTypes.BOOLEAN,
-        defaultValue: true
+        defaultValue: true,
+        
       },
       roleId: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: false,
+        defaultValue: 1, // ✅ por defecto el rol "usuario"
         references: {
-          model: 'Roles',
-          key: 'id'
-        }
+          model: "Roles",
+          key: "id",
+        },
       },
+
       password_reset_token: {
         type: DataTypes.STRING,
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
       },
       passwordResetExpires: {
         type: DataTypes.DATE,
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
       },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW
+        defaultValue: DataTypes.NOW,
       },
       updatedAt: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW
-      }
+        defaultValue: DataTypes.NOW,
+      },
     },
     {
       sequelize,
-      modelName: 'User',
-      tableName: 'Users',
+      modelName: "User",
+      tableName: "Users",
       timestamps: true, // ✅ Sequelize creará automáticamente createdAt y updatedAt
     }
   );
@@ -121,18 +124,18 @@ module.exports = (sequelize, DataTypes) => {
       where: { email, isActive: true },
       attributes: {
         exclude: [
-          'password_reset_token',
-          'passwordResetExpires',
-          'createdAt',
-          'updatedAt'
-        ]
+          "password_reset_token",
+          "passwordResetExpires",
+          "createdAt",
+          "updatedAt",
+        ],
       },
       include: [
         {
-          association: 'role',
-          attributes: { exclude: ['createdAt', 'updatedAt'] }
-        }
-      ]
+          association: "role",
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+        },
+      ],
     });
 
     if (!user) {
@@ -155,7 +158,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   User.beforeUpdate(async (user) => {
-    if (user.changed('password')) {
+    if (user.changed("password")) {
       user.password = await bcrypt.hash(user.password, 10);
     }
   });

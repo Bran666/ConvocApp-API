@@ -1,5 +1,5 @@
 const userService = require("../services/userService");
-const { User } = require("../models"); // ✅ Importamos el modelo directamente para verificar el correo
+const { User } = require("../models");
 const bcrypt = require("bcryptjs");
 
 // ============================================================
@@ -48,19 +48,11 @@ const getUserById = async (req, res) => {
 };
 
 // ============================================================
-// 🔹 Crear usuario (con validación de email único)
+// 🔹 Crear usuario (sin doble hash)
 // ============================================================
 const createUser = async (req, res) => {
   try {
-    const {
-      name,
-      email,
-      password,
-      phone,
-      isActive,
-      roleId,
-      imgUser,
-    } = req.body;
+    const { name, email, password, phone, isActive, roleId, imgUser } = req.body;
 
     // ✅ Validar campos obligatorios
     if (!name || !email || !password) {
@@ -70,7 +62,7 @@ const createUser = async (req, res) => {
       });
     }
 
-    // ✅ Validar si el correo ya existe en la base de datos
+    // ✅ Validar si el correo ya existe
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({
@@ -79,17 +71,17 @@ const createUser = async (req, res) => {
       });
     }
 
-    // ✅ Hashear la contraseña
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // 🚀 Crear usuario (el modelo se encarga del hash automáticamente)
+    const rol = roleId ?? 2;
+    const activo = isActive ?? true;
 
-    // ✅ Crear el usuario
     const newUser = await userService.createUser(
       name,
       email,
-      hashedPassword,
+      password, // ✅ sin hash manual
       phone,
-      isActive,
-      roleId,
+      activo,
+      rol,
       imgUser
     );
 
@@ -116,15 +108,13 @@ const createUser = async (req, res) => {
 
     return res.status(500).json({
       status: "Error",
-      message:
-        error.message ||
-        "Ocurrió un error inesperado al crear el usuario.",
+      message: error.message || "Ocurrió un error inesperado al crear el usuario.",
     });
   }
 };
 
 // ============================================================
-// 🔹 Actualizar usuario (incluye campo imgUser)
+// 🔹 Actualizar usuario (incluye imgUser y password opcional)
 // ============================================================
 const updateUser = async (req, res) => {
   try {
@@ -136,15 +126,7 @@ const updateUser = async (req, res) => {
       });
     }
 
-    const {
-      name,
-      email,
-      password,
-      phone,
-      isActive,
-      roleId,
-      imgUser,
-    } = req.body;
+    const { name, email, password, phone, isActive, roleId, imgUser } = req.body;
 
     // ✅ Evitar duplicar email al actualizar
     if (email) {
@@ -216,8 +198,7 @@ const deleteUser = async (req, res) => {
     if (error.name === "SequelizeForeignKeyConstraintError") {
       return res.status(400).json({
         status: "Error",
-        message:
-          "No se puede eliminar el usuario porque tiene registros asociados (ej: favoritos, convocatorias)",
+        message: "No se puede eliminar el usuario porque tiene registros asociados (ej: favoritos, convocatorias)",
       });
     }
     res.status(500).json({ status: "Error", message: error.message });

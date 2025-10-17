@@ -29,7 +29,6 @@ module.exports = (sequelize, DataTypes) => {
     // ==========================================================
     async authenticatePassword(password) {
       try {
-        if (password === this.password) return true;
         return await bcrypt.compare(password, this.password);
       } catch (error) {
         console.error("Error en authenticatePassword:", error);
@@ -65,7 +64,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
-      // 🖼️ Imagen del usuario
       imgUser: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -75,24 +73,22 @@ module.exports = (sequelize, DataTypes) => {
       isActive: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
-        
       },
       roleId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        defaultValue: 1, // ✅ por defecto el rol "usuario"
+        defaultValue: 2,
         references: {
           model: "Roles",
           key: "id",
         },
       },
-
       password_reset_token: {
         type: DataTypes.STRING,
         allowNull: true,
         defaultValue: null,
       },
-      passwordResetExpires: {
+      password_reset_expires: {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: null,
@@ -112,7 +108,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "User",
       tableName: "Users",
-      timestamps: true, // ✅ Sequelize creará automáticamente createdAt y updatedAt
+      timestamps: true,
     }
   );
 
@@ -122,14 +118,6 @@ module.exports = (sequelize, DataTypes) => {
   User.login = async function (email, password) {
     const user = await User.findOne({
       where: { email, isActive: true },
-      attributes: {
-        exclude: [
-          "password_reset_token",
-          "passwordResetExpires",
-          "createdAt",
-          "updatedAt",
-        ],
-      },
       include: [
         {
           association: "role",
@@ -149,7 +137,7 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   // ==========================================================
-  // 🔹 Hooks — Hash automático de contraseñas
+  // 🔹 Hooks: Hash automático de contraseñas
   // ==========================================================
   User.beforeCreate(async (user) => {
     if (user.password) {
@@ -164,14 +152,15 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   // ==========================================================
-  // 🔹 Actualización manual de contraseña
+  // 🔹 Actualización manual de contraseña (corregido)
   // ==========================================================
   User.updatePassword = async function (id, newPassword) {
     const user = await User.findByPk(id);
     if (!user) return { status: 404, message: "Usuario no encontrado" };
 
-    user.password = await bcrypt.hash(newPassword, 10);
-    await user.save();
+    // ✅ No se hashea aquí, el hook beforeUpdate lo hará automáticamente
+    user.password = newPassword;
+    await user.save(); // el hook hará el hash
     return user;
   };
 

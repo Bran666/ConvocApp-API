@@ -30,20 +30,24 @@ const getUserById = async (id) => {
 // ============================================================
 const createUser = async (name, email, password, phone, isActive, roleId, imgUser) => {
   try {
+    const role = roleId ?? 2;
+
     const newUser = await db.User.create({
       name,
       email,
       password,
       phone,
-      isActive, 
-      roleId,   
-      imgUser  
+      isActive: isActive ?? true,
+      roleId: role,
+      imgUser
     });
+
     return newUser;
   } catch (error) {
     throw new Error("Error al crear el usuario: " + error.message);
   }
 };
+
 
 // ============================================================
 // 🔹 Actualizar usuario (incluye campo imgUser)

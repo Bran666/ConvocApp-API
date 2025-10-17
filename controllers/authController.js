@@ -6,91 +6,101 @@ const bcrypt = require("bcryptjs");
 const { Op } = require("sequelize");
 
 module.exports = {
-  // Método para verificar código de recuperación
-  verifyCode: async function (req, res) {
-    try {
-      const { token } = req.body;
+ // ✅ Método correcto para verificar código de recuperación
+verifyCode: async function (req, res) {
+  try {
+    const { email, code } = req.body;
 
-      if (!token) {
-        return res.status(400).json({
-          message: "El token es requerido",
-        });
-      }
+    // 🔹 Validar campos requeridos
+    if (!email || !code) {
+      return res.status(400).json({
+        message: "Correo y código son requeridos",
+      });
+    }
 
-      const user = await User.findOne({
-        where: {
-          password_reset_token: token,
-          password_reset_expires: {
-            [Op.gt]: new Date(),
-          },
+    // 🔹 Buscar usuario con el código activo
+    const user = await User.findOne({
+      where: {
+        email,
+        isActive: true,
+        password_reset_token: code,
+        password_reset_expires: { [Op.gt]: new Date() }, // aún no expirado
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Código inválido o expirado",
+      });
+    }
+
+    // 🔹 Código válido
+    return res.status(200).json({
+      message: "Código válido",
+      valid: true,
+    });
+  } catch (error) {
+    console.error("💥 Error en verifyCode:", error);
+    return res.status(500).json({
+      message: "Error al verificar el código",
+      error:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+},
+
+
+  // ============================================================
+// 🔹 Autenticación de usuario
+// ============================================================
+authenticate: async function (req, res) {
+  try {
+    const { email, password } = req.body;
+
+    // Buscar el usuario
+    const data = await User.login(email, password);
+
+    if (data.status === 200 && data.user) {
+      const user = data.user;
+
+      // ✅ Generar token con roleId incluido
+      const token = jwt.sign(
+        {
+          userId: user.id,
+          roleId: user.roleId, // 🔥 agregado correctamente
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "24h" }
+      );
+
+      // ✅ Enviar respuesta con toda la info necesaria
+      return res.status(200).json({
+        status: "ok",
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          roleId: user.roleId, // 👈 CORREGIDO
+          role: user.role ? user.role.name : null,
+          imgUser: user.imgUser || null,
         },
       });
-
-      if (!user) {
-        return res.status(400).json({
-          message: "El token es inválido o ha expirado",
-        });
-      }
-
-      return res.status(200).json({
-        message: "Token válido",
-        valid: true,
-      });
-    } catch (error) {
-      console.error("Error en verifyCode:", error);
-      return res.status(500).json({
-        message: "Error al verificar el código",
-        error:
-          process.env.NODE_ENV === "development" ? error.message : undefined,
-      });
     }
-  },
 
-  // Método authenticate adaptado a tus campos
-  authenticate: async function (req, res) {
-    try {
-      // Usamos email en lugar de institutional_email
-      let data = await User.login(req.body.email, req.body.password);
-
-      if (data.status === 200 && data.user) {
-        // Generar token con la información del usuario
-        let token = jwt.sign(
-          {
-            userId: data.user.id,
-            user: data.user,
-          },
-          process.env.JWT_SECRET,
-          {
-            expiresIn: 60 * 60 * 24, // Token expira en 24 horas
-          }
-        );
-
-        return res.status(200).json({
-          token,
-          user: {
-            uId: data.user.id,
-            name: data.user.name,
-            email: data.user.email, // 👈 AGREGA ESTA LÍNEA
-            roleId: data.user.rolId,
-            role: data.user.role ? data.user.role.name : null,
-            imgUser: data.user.imgUser || null,
-          },
-        });
-      }
-
-      // Si no es status 200, retornar el error del modelo
-      return res.status(data.status || 500).json({
-        message: data.message || "Error en la autenticación",
-      });
-    } catch (error) {
-      console.log("Error en authenticate:", error);
-      return res.status(500).json({
-        message: "Error interno del servidor",
-        error:
-          process.env.NODE_ENV === "development" ? error.message : undefined,
-      });
-    }
-  },
+    // Si no pasa la autenticación
+    return res.status(data.status || 401).json({
+      status: "error",
+      message: data.message || "Usuario o contraseña inválidos",
+    });
+  } catch (error) {
+    console.error("Error en authenticate:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Error interno del servidor",
+    });
+  }
+},
 
   // Método getUserAuthenticated
   getUserAuthenticated: async function (req, res) {
@@ -222,49 +232,53 @@ module.exports = {
     }
   },
 
-  resetPassword: async function (req, res) {
-    try {
-      const { email, code, newPassword } = req.body;
+ resetPassword: async function (req, res) {
+  try {
+    const { email, code, newPassword } = req.body;
 
-      if (!email || !code || !newPassword) {
-        return res
-          .status(400)
-          .json({
-            message: "Correo, código y nueva contraseña son requeridos",
-          });
-      }
-
-      const user = await User.findOne({
-        where: {
-          email,
-          isActive: true,
-          password_reset_token: code,
-          password_reset_expires: { [Op.gt]: new Date() },
-        },
+    // 🔹 Validar datos
+    if (!email || !code || !newPassword) {
+      return res.status(400).json({
+        message: "Correo, código y nueva contraseña son requeridos",
       });
-
-      if (!user) {
-        return res.status(400).json({ message: "Código inválido o expirado" });
-      }
-
-      await User.updatePassword(user.id, newPassword);
-
-      // limpiar código
-      await user.update({
-        password_reset_token: null,
-        password_reset_expires: null,
-      });
-
-      return res
-        .status(200)
-        .json({ message: "Contraseña actualizada con éxito" });
-    } catch (error) {
-      console.error("Error en resetPassword:", error);
-      return res
-        .status(500)
-        .json({ message: "Error al cambiar la contraseña" });
     }
-  },
+
+    // 🔹 Buscar usuario con código válido y no expirado
+    const user = await User.findOne({
+      where: {
+        email,
+        isActive: true,
+        password_reset_token: code,
+        password_reset_expires: { [Op.gt]: new Date() }, // ✅ campo corregido
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Código inválido o expirado",
+      });
+    }
+
+    // 🔹 Actualizar contraseña con hash seguro
+    await User.updatePassword(user.id, newPassword);
+
+    // 🔹 Limpiar token después del cambio
+    await user.update({
+      password_reset_token: null,
+      password_reset_expires: null,
+    });
+
+    return res.status(200).json({
+      message: "Contraseña actualizada con éxito ✅",
+    });
+  } catch (error) {
+    console.error("Error en resetPassword:", error);
+    return res.status(500).json({
+      message: "Error al cambiar la contraseña",
+    });
+  }
+},
+
 
   // Método adicional para cambiar contraseña (cuando el usuario está autenticado)
   changePassword: async function (req, res) {
@@ -364,33 +378,5 @@ module.exports = {
       });
     }
   },
-  verifyCode: async function (req, res) {
-    try {
-      const { email, code } = req.body;
-
-      if (!email || !code) {
-        return res
-          .status(400)
-          .json({ message: "Correo y código son requeridos" });
-      }
-
-      const user = await User.findOne({
-        where: {
-          email,
-          isActive: true,
-          password_reset_token: code,
-          password_reset_expires: { [Op.gt]: new Date() },
-        },
-      });
-
-      if (!user) {
-        return res.status(400).json({ message: "Código inválido o expirado" });
-      }
-
-      return res.status(200).json({ message: "Código válido" });
-    } catch (error) {
-      console.error("Error en verifyCode:", error);
-      return res.status(500).json({ message: "Error al verificar el código" });
-    }
-  },
+ 
 };

@@ -9,6 +9,18 @@ module.exports = {
         website : "https://minciencias.gov.co/convocatorias/todas",
         createdAt : new Date(),
         updatedAt : new Date()
+      },
+      {
+        name : "Universidad Industrial de Santander",
+        website : "https://convocatorias.uis.edu.co/",
+        createdAt : new Date(),
+        updatedAt : new Date()
+      },
+      {
+        name : "Apps.co",
+        website : "https://apps.co/portal/Secciones/Convocatorias/",
+        createdAt : new Date(),
+        updatedAt : new Date()
       }
     ])
   },

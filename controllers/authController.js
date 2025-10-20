@@ -23,8 +23,7 @@ verifyCode: async function (req, res) {
       where: {
         email,
         isActive: true,
-        password_reset_token: code,
-        password_reset_expires: { [Op.gt]: new Date() }, // aún no expirado
+      
       },
     });
 
@@ -234,39 +233,31 @@ authenticate: async function (req, res) {
 
  resetPassword: async function (req, res) {
   try {
-    const { email, code, newPassword } = req.body;
+    const { email, newPassword } = req.body;
 
     // 🔹 Validar datos
-    if (!email || !code || !newPassword) {
+    if (!email || !newPassword) {
       return res.status(400).json({
-        message: "Correo, código y nueva contraseña son requeridos",
+        message: "Correo y nueva contraseña son requeridos",
       });
     }
 
-    // 🔹 Buscar usuario con código válido y no expirado
+    // 🔹 Buscar usuario activo por su email
     const user = await User.findOne({
       where: {
         email,
         isActive: true,
-        password_reset_token: code,
-        password_reset_expires: { [Op.gt]: new Date() }, // ✅ campo corregido
       },
     });
 
     if (!user) {
-      return res.status(400).json({
-        message: "Código inválido o expirado",
+      return res.status(404).json({
+        message: "Usuario no encontrado",
       });
     }
 
     // 🔹 Actualizar contraseña con hash seguro
     await User.updatePassword(user.id, newPassword);
-
-    // 🔹 Limpiar token después del cambio
-    await user.update({
-      password_reset_token: null,
-      password_reset_expires: null,
-    });
 
     return res.status(200).json({
       message: "Contraseña actualizada con éxito ✅",
@@ -278,6 +269,7 @@ authenticate: async function (req, res) {
     });
   }
 },
+
 
 
   // Método adicional para cambiar contraseña (cuando el usuario está autenticado)

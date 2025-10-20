@@ -83,16 +83,7 @@ module.exports = (sequelize, DataTypes) => {
           key: "id",
         },
       },
-      password_reset_token: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        defaultValue: null,
-      },
-      password_reset_expires: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        defaultValue: null,
-      },
+      
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
